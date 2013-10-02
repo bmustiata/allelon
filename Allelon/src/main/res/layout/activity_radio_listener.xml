@@ -12,6 +12,13 @@
         android:background="@drawable/logo_allelon"
         android:scaleType="fitStart" />
 
+    <Spinner
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/availableStreams"
+        android:entries="@array/available_streams"
+        android:layout_gravity="center" />
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -19,7 +26,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ascultă"
+            android:text="@string/play"
             android:id="@+id/listenButton"
             android:layout_gravity="right|center_vertical"
             android:layout_alignParentTop="true"
@@ -29,12 +36,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Închide"
+            android:text="@string/stop"
             android:id="@+id/closeButton"
-            android:layout_gravity="left|center_vertical"
+            android:layout_gravity="right|center_vertical"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="13dp" />
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="13dp" />
+
     </RelativeLayout>
 
 </LinearLayout>

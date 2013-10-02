@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 
 public class RadioActivity extends Activity {
 
@@ -12,17 +14,32 @@ public class RadioActivity extends Activity {
 
     private Button listenButton;
     private Button closeButton;
+    private Spinner availableStreamsSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio_listener);
 
+        availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
+        availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (allelonMediaPlayer.isPlaying()) {
+                    allelonMediaPlayer.startPlay(getSelectedStream());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
         listenButton = (Button) findViewById(R.id.listenButton);
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                allelonMediaPlayer.startPlay();
+                allelonMediaPlayer.startPlay(getSelectedStream());
                 updateButtonVisibility();
             }
         });
@@ -37,6 +54,14 @@ public class RadioActivity extends Activity {
         });
 
         updateButtonVisibility();
+    }
+
+    private String getSelectedStream() {
+        AvailableStream stream = AvailableStream.valueOf(
+            availableStreamsSpinner.getSelectedItem().toString().toUpperCase()
+        );
+
+        return stream.getUrl();
     }
 
     @Override

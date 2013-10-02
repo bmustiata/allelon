@@ -12,7 +12,7 @@ public class AllelonMediaPlayer {
         return playing;
     }
 
-    public void startPlay() {
+    public void startPlay(String url) {
         if (isPlaying()) {
             stopPlay();
         }
@@ -21,7 +21,7 @@ public class AllelonMediaPlayer {
             playing = true;
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource("http://87.118.82.77:8000/stream/1/");
+            mediaPlayer.setDataSource(url);
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (Exception e) {

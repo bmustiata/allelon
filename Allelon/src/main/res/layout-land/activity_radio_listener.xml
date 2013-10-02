@@ -7,7 +7,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ascultă"
+        android:text="@string/play"
         android:id="@+id/listenButton"
         android:layout_marginBottom="13dp"
         android:layout_alignParentBottom="true"
@@ -17,10 +17,21 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Închide"
+        android:text="@string/stop"
         android:id="@+id/closeButton"
-        android:layout_marginLeft="13dp"
+        android:layout_marginRight="13dp"
         android:layout_alignTop="@+id/listenButton"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="13dp" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/availableStreams"
+        android:entries="@array/available_streams"
+        android:layout_alignBottom="@+id/listenButton"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="11dp"
+        android:layout_toLeftOf="@+id/listenButton" />
+
 </RelativeLayout>

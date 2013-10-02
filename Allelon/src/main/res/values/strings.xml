@@ -4,5 +4,12 @@
     <string name="app_name">Allelon</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+
+    <string-array name="available_streams">
+        <item>Contemporan</item>
+        <item>Classic</item>
+    </string-array>
 
 </resources>

@@ -1,0 +1,28 @@
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="237dp"
+        android:id="@+id/imageView"
+        android:layout_gravity="center"
+        android:background="@drawable/logo_allelon"
+        android:scaleType="fitStart" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ascultă"
+        android:id="@+id/listenButton"
+        android:layout_gravity="right|center_vertical" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Închide"
+        android:id="@+id/closeButton"
+        android:layout_gravity="left|center_vertical" />
+</LinearLayout>

@@ -23,7 +23,7 @@ public class RadioActivity extends Activity {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.startPlay();
-                updateVisibility();
+                updateButtonVisibility();
             }
         });
 
@@ -32,21 +32,21 @@ public class RadioActivity extends Activity {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.stopPlay();
-                updateVisibility();
+                updateButtonVisibility();
             }
         });
 
-        updateVisibility();
+        updateButtonVisibility();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        updateVisibility();
+        updateButtonVisibility();
     }
 
-    private void updateVisibility() {
+    private void updateButtonVisibility() {
         listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
         closeButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
     }

@@ -10,26 +10,45 @@ public class RadioActivity extends Activity {
 
     private AllelonMediaPlayer allelonMediaPlayer = new AllelonMediaPlayer();
 
+    private Button listenButton;
+    private Button closeButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio_listener);
 
-        Button listenButton = (Button) findViewById(R.id.listenButton);
+        listenButton = (Button) findViewById(R.id.listenButton);
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.startPlay();
+                updateVisibility();
             }
         });
 
-        Button closeButton = (Button) findViewById(R.id.closeButton);
+        closeButton = (Button) findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.stopPlay();
+                updateVisibility();
             }
         });
+
+        updateVisibility();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        updateVisibility();
+    }
+
+    private void updateVisibility() {
+        listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
+        closeButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
     }
 
 

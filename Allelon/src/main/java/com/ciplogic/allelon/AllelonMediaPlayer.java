@@ -3,11 +3,13 @@ package com.ciplogic.allelon;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+// views have their own media player, thus this object is static.
 public class AllelonMediaPlayer {
-    private MediaPlayer mediaPlayer;
+    private static MediaPlayer mediaPlayer;
+    private static boolean playing;
 
     public boolean isPlaying() {
-        return mediaPlayer != null && mediaPlayer.isPlaying();
+        return playing;
     }
 
     public void startPlay() {
@@ -16,6 +18,7 @@ public class AllelonMediaPlayer {
         }
 
         try {
+            playing = true;
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource("http://87.118.82.77:8000/stream/1/");
@@ -27,6 +30,7 @@ public class AllelonMediaPlayer {
     }
 
     public void stopPlay() {
+        playing = false;
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }

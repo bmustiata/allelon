@@ -1,11 +1,16 @@
 package com.ciplogic.allelon;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.ciplogic.allelon.notification.StreamNotification;
@@ -28,6 +33,8 @@ public class RadioActivity extends Activity {
 
         listener = new MediaPlayerNotificationListener(new StreamNotification(this));
         allelonMediaPlayer.addPlayerListener(listener);
+
+        fixAspectRatioForImage();
 
         availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
         availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -62,6 +69,26 @@ public class RadioActivity extends Activity {
         });
 
         updateButtonVisibility();
+    }
+
+    private void fixAspectRatioForImage() {
+        if (isVerticalLayout()) {
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            float aspect = (171.0f / 410.0f);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
+        }
+    }
+
+    private boolean isVerticalLayout() {
+        return this.getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    }
+
+    public float getWidth() {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        return outMetrics.widthPixels;
     }
 
     @Override

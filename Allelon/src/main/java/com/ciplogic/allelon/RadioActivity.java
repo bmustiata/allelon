@@ -8,9 +8,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.ciplogic.allelon.notification.StreamNotification;
+import com.ciplogic.allelon.player.AllelonMediaPlayer;
+import com.ciplogic.allelon.player.AvailableStream;
+
 public class RadioActivity extends Activity {
 
     private AllelonMediaPlayer allelonMediaPlayer = new AllelonMediaPlayer();
+    private MediaPlayerNotificationListener listener;
 
     private Button listenButton;
     private Button closeButton;
@@ -20,6 +25,9 @@ public class RadioActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio_listener);
+
+        listener = new MediaPlayerNotificationListener(new StreamNotification(this));
+        allelonMediaPlayer.addPlayerListener(listener);
 
         availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
         availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -54,6 +62,11 @@ public class RadioActivity extends Activity {
         });
 
         updateButtonVisibility();
+    }
+
+    @Override
+    protected void onDestroy() {
+        allelonMediaPlayer.removePlayerListener(listener);
     }
 
     private String getSelectedStream() {

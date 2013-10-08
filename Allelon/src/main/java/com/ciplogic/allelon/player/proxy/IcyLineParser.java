@@ -1,4 +1,4 @@
-package com.ciplogic.allelon.proxy;
+package com.ciplogic.allelon.player.proxy;
 
 import org.apache.http.ParseException;
 import org.apache.http.ProtocolVersion;

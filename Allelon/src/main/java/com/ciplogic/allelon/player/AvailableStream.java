@@ -1,4 +1,4 @@
-package com.ciplogic.allelon;
+package com.ciplogic.allelon.player;
 
 public enum AvailableStream {
     CONTEMPORAN("http://87.118.82.77:8000/stream/1/"),

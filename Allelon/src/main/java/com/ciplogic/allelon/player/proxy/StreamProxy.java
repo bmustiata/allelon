@@ -1,4 +1,4 @@
-package com.ciplogic.allelon;
+package com.ciplogic.allelon.player.proxy;
 
 // Original project the NPR one:
 // https://npr-android-app.googlecode.com/git-history/e4984187f45c39a54ea6c88f71197762dbe10e72/Npr/src/org/npr/android/news/StreamProxy.java
@@ -18,8 +18,6 @@ package com.ciplogic.allelon;
 // limitations under the License.
 
 import android.util.Log;
-
-import com.ciplogic.allelon.proxy.MyClientConnManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;

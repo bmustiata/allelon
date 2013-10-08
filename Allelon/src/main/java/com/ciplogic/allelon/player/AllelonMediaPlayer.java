@@ -3,6 +3,7 @@ package com.ciplogic.allelon.player;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+import com.ciplogic.allelon.ToastProvider;
 import com.ciplogic.allelon.player.proxy.StreamProxy;
 
 import java.util.ArrayList;
@@ -17,6 +18,12 @@ public class AllelonMediaPlayer {
 
     private List<MediaPlayerListener> mediaPlayerListeners = new ArrayList<MediaPlayerListener>();
 
+    private ToastProvider toastProvider;
+
+    public AllelonMediaPlayer(ToastProvider toastProvider) {
+        this.toastProvider = toastProvider;
+    }
+
     public boolean isPlaying() {
         return playing;
     }
@@ -27,13 +34,14 @@ public class AllelonMediaPlayer {
         }
 
         try {
+            playing = true;
+
             proxy = new StreamProxy();
             proxy.init();
             proxy.start();
 
             url = String.format("http://127.0.0.1:%d/%s", proxy.getPort(), url);
 
-            playing = true;
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(url);
@@ -42,7 +50,8 @@ public class AllelonMediaPlayer {
 
             notifyStartPlaying();
         } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
+            stopPlay(); // attempt to close the proxy if it was opened, and reset the playing flag.
+            toastProvider.showToast("Unable to play stream.");
         }
     }
 
@@ -52,6 +61,8 @@ public class AllelonMediaPlayer {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
             }
+        } catch (Exception e) {
+            // on purpose swallow it.
         } finally { // we definitelly want to kill the proxy, even if the media player crashes.
             if (proxy != null) {
                 proxy.stop();

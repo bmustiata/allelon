@@ -32,6 +32,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.params.HttpConnectionParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,13 +90,29 @@ public class StreamProxy implements Runnable {
 
         try {
             thread.interrupt();
-            thread.join(5000);
+            thread.join(2000); // 2 secs is more than enough
 
-            Log.d(LOG_TAG, "After 5000ms the thread is alive: " + thread.isAlive());
+            Log.d(LOG_TAG, "After 2000ms the thread is alive: " + thread.isAlive());
             if (thread.isAlive()) {
-                thread.stop(); // uncool, but I want it dead, not stream data.
+                thread.interrupt(); // try again.
+                thread.join(2000); // 2 secs is more than enough
+                Log.d(LOG_TAG, "After yet another 2000ms the thread is alive: " + thread.isAlive());
+
+                if (thread.isAlive()) {
+                    thread.interrupt(); // last chance.
+                    thread.join(2000);
+                    Log.d(LOG_TAG, "After yet another 2000ms the thread is STILL alive: " + thread.isAlive());
+
+                    if (thread.isAlive()) {
+                        throw new IllegalStateException("Proxy is still alive after waiting for 6 seconds. Going down with a bang.");
+                    }
+                }
             }
+
+            socket.close(); // should attempt to cleanup the socket.
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -152,6 +169,7 @@ public class StreamProxy implements Runnable {
 
     private HttpResponse download(String url) {
         DefaultHttpClient seed = new DefaultHttpClient();
+        HttpConnectionParams.setConnectionTimeout(seed.getParams(), 3000);
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(
                 new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -215,6 +233,7 @@ public class StreamProxy implements Runnable {
             }
         } catch (Exception e) {
             Log.e("", e.getMessage(), e);
+            isRunning = false;
         } finally {
             if (data != null) {
                 Log.d(LOG_TAG, "shutting down remote data connection.");

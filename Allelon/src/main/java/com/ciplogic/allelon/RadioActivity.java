@@ -19,7 +19,7 @@ import com.ciplogic.allelon.player.AvailableStream;
 
 public class RadioActivity extends Activity {
 
-    private AllelonMediaPlayer allelonMediaPlayer = new AllelonMediaPlayer();
+    private AllelonMediaPlayer allelonMediaPlayer = new AllelonMediaPlayer(new ToastProvider(this));
     private MediaPlayerNotificationListener listener;
 
     private Button listenButton;

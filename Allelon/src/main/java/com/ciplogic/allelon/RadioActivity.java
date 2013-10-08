@@ -66,6 +66,8 @@ public class RadioActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+
         allelonMediaPlayer.removePlayerListener(listener);
     }
 

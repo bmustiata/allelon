@@ -16,14 +16,6 @@ public class AllelonMediaPlayer {
     }
 
     public void startPlay(String url) {
-        int sdkVersion = 0;
-        try {
-            sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-        } catch (NumberFormatException ignored) {
-        }
-
-
-
         if (isPlaying()) {
             stopPlay();
         }

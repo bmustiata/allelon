@@ -31,11 +31,18 @@ public class RadioActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio_listener);
 
+        addStreamListener();
+        fixAspectRatioForImageIfNeeded();
+        addEventListeners();
+        updateButtonVisibility();
+    }
+
+    private void addStreamListener() {
         listener = new MediaPlayerNotificationListener(new StreamNotification(this));
         allelonMediaPlayer.addPlayerListener(listener);
+    }
 
-        fixAspectRatioForImage();
-
+    private void addEventListeners() {
         availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
         availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -67,11 +74,9 @@ public class RadioActivity extends Activity {
                 updateButtonVisibility();
             }
         });
-
-        updateButtonVisibility();
     }
 
-    private void fixAspectRatioForImage() {
+    private void fixAspectRatioForImageIfNeeded() {
         if (isVerticalLayout()) {
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             float aspect = (171.0f / 410.0f);

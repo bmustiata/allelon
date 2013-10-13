@@ -18,7 +18,6 @@ import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
 
 public class RadioActivity extends Activity {
-
     private AllelonMediaPlayer allelonMediaPlayer = new AllelonMediaPlayer(new ToastProvider(this));
     private MediaPlayerNotificationListener listener;
 
@@ -104,8 +103,8 @@ public class RadioActivity extends Activity {
     }
 
     private String getSelectedStream() {
-        AvailableStream stream = AvailableStream.valueOf(
-            availableStreamsSpinner.getSelectedItem().toString().toUpperCase()
+        AvailableStream stream = AvailableStream.fromLabel(
+            availableStreamsSpinner.getSelectedItem().toString()
         );
 
         return stream.getUrl();

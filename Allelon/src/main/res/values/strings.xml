@@ -10,6 +10,7 @@
     <string-array name="available_streams">
         <item>Contemporan</item>
         <item>Classic</item>
+        <item>Contemporan AAC</item>
     </string-array>
 
 </resources>

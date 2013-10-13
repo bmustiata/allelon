@@ -27,10 +27,14 @@ public class RadioActivity extends Activity {
     private Button closeButton;
     private Spinner availableStreamsSpinner;
 
+    private boolean firstCallPassed = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_radio_listener);
+
+        findUiComponents();
 
         addStreamListener();
         fixAspectRatioForImageIfNeeded();
@@ -44,13 +48,16 @@ public class RadioActivity extends Activity {
     }
 
     private void addEventListeners() {
-        availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
         availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (allelonMediaPlayer.isPlaying()) {
+                // FIXME: the very first call actually restarts the stream in some scenarios.
+                // probably a better solution related to the Activity lifecycle would be in place.
+                if (firstCallPassed && allelonMediaPlayer.isPlaying()) {
                     allelonMediaPlayer.startPlay(getSelectedStream());
                 }
+
+                firstCallPassed = true;
             }
 
             @Override
@@ -58,7 +65,6 @@ public class RadioActivity extends Activity {
             }
         });
 
-        listenButton = (Button) findViewById(R.id.listenButton);
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,7 +73,6 @@ public class RadioActivity extends Activity {
             }
         });
 
-        closeButton = (Button) findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,6 +80,12 @@ public class RadioActivity extends Activity {
                 updateButtonVisibility();
             }
         });
+    }
+
+    private void findUiComponents() {
+        availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
+        listenButton = (Button) findViewById(R.id.listenButton);
+        closeButton = (Button) findViewById(R.id.closeButton);
     }
 
     private void fixAspectRatioForImageIfNeeded() {

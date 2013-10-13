@@ -1,6 +1,10 @@
 package com.ciplogic.allelon.service;
 
+import android.content.Context;
+
+import com.ciplogic.allelon.MediaPlayerNotificationListener;
 import com.ciplogic.allelon.ToastProvider;
+import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
@@ -9,15 +13,26 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
     private static ThreadMediaPlayer INSTANCE;
 
     private AMediaPlayer delegatePlayer;
+
     private volatile boolean playingDelegate = false;
 
-    private ThreadMediaPlayer(ToastProvider toastProvider) {
+    private ThreadMediaPlayer(ToastProvider toastProvider,
+                              MediaPlayerNotificationListener mediaPlayerNotificationListener) {
         delegatePlayer = new AllelonMediaPlayer(toastProvider);
         delegatePlayer.addPlayerListener(this);
+        delegatePlayer.addPlayerListener(mediaPlayerNotificationListener);
     }
 
-    public static ThreadMediaPlayer getInstance(ToastProvider toastProvider) {
-        return INSTANCE == null ? INSTANCE = new ThreadMediaPlayer(toastProvider) : INSTANCE;
+    public static ThreadMediaPlayer getInstance(Context context) {
+        if (INSTANCE == null) {
+            StreamNotification streamNotification = new StreamNotification(context);
+            MediaPlayerNotificationListener mediaPlayerNotificationListener = new MediaPlayerNotificationListener(streamNotification);
+            ToastProvider toastProvider = new ToastProvider(context);
+
+            INSTANCE = new ThreadMediaPlayer(toastProvider, mediaPlayerNotificationListener);
+        }
+
+        return INSTANCE;
     }
 
     @Override

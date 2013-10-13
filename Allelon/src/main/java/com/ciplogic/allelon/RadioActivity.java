@@ -13,15 +13,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
 public class RadioActivity extends Activity {
-    private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(new ToastProvider(this));
-
-    private MediaPlayerNotificationListener listener;
+    private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
 
     private Button listenButton;
     private Button closeButton;
@@ -36,15 +33,9 @@ public class RadioActivity extends Activity {
 
         findUiComponents();
 
-        addStreamListener();
         fixAspectRatioForImageIfNeeded();
         addEventListeners();
         updateButtonVisibility();
-    }
-
-    private void addStreamListener() {
-        listener = new MediaPlayerNotificationListener(new StreamNotification(this));
-        allelonMediaPlayer.addPlayerListener(listener);
     }
 
     private void addEventListeners() {
@@ -106,13 +97,6 @@ public class RadioActivity extends Activity {
         display.getMetrics(outMetrics);
 
         return outMetrics.widthPixels;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        allelonMediaPlayer.removePlayerListener(listener);
     }
 
     private String getSelectedStream() {

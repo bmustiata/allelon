@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // views have their own media player, thus this object is static.
-public class AllelonMediaPlayer {
+public class AllelonMediaPlayer implements AMediaPlayer {
     private static MediaPlayer mediaPlayer;
     private static boolean playing;
 
@@ -24,10 +24,12 @@ public class AllelonMediaPlayer {
         this.toastProvider = toastProvider;
     }
 
+    @Override
     public boolean isPlaying() {
         return playing;
     }
 
+    @Override
     public void startPlay(String url) {
         if (isPlaying()) {
             stopPlay();
@@ -55,6 +57,7 @@ public class AllelonMediaPlayer {
         }
     }
 
+    @Override
     public void stopPlay() {
         playing = false;
         try {
@@ -84,10 +87,12 @@ public class AllelonMediaPlayer {
         }
     }
 
+    @Override
     public void addPlayerListener(MediaPlayerListener listener) {
         mediaPlayerListeners.add(listener);
     }
 
+    @Override
     public void removePlayerListener(MediaPlayerListener listener) {
         mediaPlayerListeners.remove(listener);
     }

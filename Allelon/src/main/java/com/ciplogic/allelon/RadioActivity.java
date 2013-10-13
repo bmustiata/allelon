@@ -14,11 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.ciplogic.allelon.notification.StreamNotification;
-import com.ciplogic.allelon.player.AllelonMediaPlayer;
+import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
+import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
 public class RadioActivity extends Activity {
-    private AllelonMediaPlayer allelonMediaPlayer = new AllelonMediaPlayer(new ToastProvider(this));
+    private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(new ToastProvider(this));
+
     private MediaPlayerNotificationListener listener;
 
     private Button listenButton;
@@ -104,7 +106,7 @@ public class RadioActivity extends Activity {
 
     private String getSelectedStream() {
         AvailableStream stream = AvailableStream.fromLabel(
-            availableStreamsSpinner.getSelectedItem().toString()
+                availableStreamsSpinner.getSelectedItem().toString()
         );
 
         return stream.getUrl();

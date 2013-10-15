@@ -4,6 +4,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 import com.ciplogic.allelon.ToastProvider;
+import com.ciplogic.allelon.player.proxy.StreamConnectionListener;
 import com.ciplogic.allelon.player.proxy.StreamProxy;
 
 import java.util.ArrayList;
@@ -14,13 +15,15 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     private String playedUrl;
 
     private StreamProxy proxy;
+    private final StreamConnectionListener streamConnectionListener;
 
     private List<MediaPlayerListener> mediaPlayerListeners = new ArrayList<MediaPlayerListener>();
 
     private ToastProvider toastProvider;
 
-    public AllelonMediaPlayer(ToastProvider toastProvider) {
+    public AllelonMediaPlayer(ToastProvider toastProvider, StreamConnectionListener streamConnectionListener) {
         this.toastProvider = toastProvider;
+        this.streamConnectionListener = streamConnectionListener;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class AllelonMediaPlayer implements AMediaPlayer {
         try {
             playedUrl = url;
 
-            proxy = new StreamProxy();
+            proxy = new StreamProxy(streamConnectionListener);
             proxy.init();
             proxy.start();
 
@@ -76,6 +79,7 @@ public class AllelonMediaPlayer implements AMediaPlayer {
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
+                mediaPlayer.release();
             }
         } catch (Exception e) {
             // on purpose swallow it.

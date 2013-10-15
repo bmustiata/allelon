@@ -47,8 +47,13 @@ import java.util.StringTokenizer;
 
 public class StreamProxy implements Runnable {
     private static final String LOG_TAG = StreamProxy.class.getName();
+    private final StreamConnectionListener streamConnectionListener;
 
     private int port = 0;
+
+    public StreamProxy(StreamConnectionListener streamConnectionListener) {
+        this.streamConnectionListener = streamConnectionListener;
+    }
 
     public int getPort() {
         return port;
@@ -169,8 +174,7 @@ public class StreamProxy implements Runnable {
 
     private HttpResponse download(String url) {
         DefaultHttpClient seed = new DefaultHttpClient();
-        HttpConnectionParams.setConnectionTimeout(seed.getParams(), 10000);
-        HttpConnectionParams.setSoTimeout(seed.getParams(), 10000);
+        HttpConnectionParams.setConnectionTimeout(seed.getParams(), 3000);
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(
                 new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -243,6 +247,7 @@ public class StreamProxy implements Runnable {
                 data.close();
             }
             client.close();
+            streamConnectionListener.onStreamClosed(); // notify that the connection is closed.
         }
     }
 

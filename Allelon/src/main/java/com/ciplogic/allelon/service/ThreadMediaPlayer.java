@@ -1,5 +1,6 @@
 package com.ciplogic.allelon.service;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -9,22 +10,26 @@ import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
+import com.ciplogic.allelon.player.proxy.StreamConnectionListener;
 
-public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Runnable {
+public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, StreamConnectionListener, Runnable {
     private static ThreadMediaPlayer INSTANCE;
 
     private final Context context;
+    private final ToastProvider toastProvider;
 
     private AMediaPlayer delegatePlayer;
 
     private volatile boolean playingDelegate = false;
+    private volatile String url;
 
     private ThreadMediaPlayer(ToastProvider toastProvider,
                               MediaPlayerNotificationListener mediaPlayerNotificationListener, Context context) {
-        delegatePlayer = new AllelonMediaPlayer(toastProvider);
+        delegatePlayer = new AllelonMediaPlayer(toastProvider, this);
         delegatePlayer.addPlayerListener(this);
         delegatePlayer.addPlayerListener(mediaPlayerNotificationListener);
         this.context = context;
+        this.toastProvider = toastProvider;
     }
 
     public static ThreadMediaPlayer getInstance(Context context) {
@@ -41,23 +46,27 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
 
     @Override
     public synchronized boolean isPlaying() {
-        return delegatePlayer.isPlaying();
+        return playingDelegate;
     }
 
     @Override
     public String getPlayedUrl() {
-        return delegatePlayer.getPlayedUrl();
+        return url;
     }
 
     @Override
     public synchronized void startPlay(String url) {
-        delegatePlayer.startPlay(url);
+        playingDelegate = true;
+        this.url = url;
+        notifyAll();
         context.startService(new Intent(context, MediaPlayerIntent.class));
     }
 
     @Override
     public synchronized void stopPlay() {
-        delegatePlayer.stopPlay();
+        playingDelegate = false;
+        url = null;
+        notifyAll();
     }
 
     /**
@@ -65,6 +74,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
      */
     @Override
     public void run() {
+        delegatePlayer.startPlay(url);
         while (playingDelegate) {
             synchronized (this) {
                 try {
@@ -73,6 +83,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
                 }
             }
         }
+        delegatePlayer.stopPlay();
     }
 
     @Override
@@ -86,14 +97,23 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
     }
 
     @Override
-    public synchronized void onStartStreaming() {
-        playingDelegate = true;
-        this.notify();
+    public void onStartStreaming() {
     }
 
     @Override
-    public synchronized void onStopStreaming() {
-        playingDelegate = false;
-        this.notify();
+    public void onStopStreaming() {
+        stopPlay();
+    }
+
+    @Override
+    public void onStreamClosed() {
+        ((Activity)context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                toastProvider.showToast("Stream connection closed. Allelon will exit.");
+            }
+        });
+
+        stopPlay();
     }
 }

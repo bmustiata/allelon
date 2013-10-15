@@ -29,6 +29,11 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     }
 
     @Override
+    public String getPlayedUrl() {
+        return playedUrl;
+    }
+
+    @Override
     public void startPlay(String url) {
         if (isPlaying()) {
             if (isSameStreamAlreadyPlaying(url)) {

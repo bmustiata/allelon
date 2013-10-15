@@ -35,7 +35,7 @@ public class RadioActivity extends Activity {
 
         fixAspectRatioForImageIfNeeded();
         addEventListeners();
-        updateButtonVisibility();
+        updateControlsStatus();
     }
 
     private void addEventListeners() {
@@ -60,7 +60,7 @@ public class RadioActivity extends Activity {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.startPlay(getSelectedStream());
-                updateButtonVisibility();
+                updateControlsStatus();
             }
         });
 
@@ -68,7 +68,7 @@ public class RadioActivity extends Activity {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.stopPlay();
-                updateButtonVisibility();
+                updateControlsStatus();
             }
         });
     }
@@ -111,14 +111,32 @@ public class RadioActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        updateButtonVisibility();
+        updateControlsStatus();
     }
 
-    private void updateButtonVisibility() {
+    private void updateControlsStatus() {
+        if (allelonMediaPlayer.isPlaying()) {
+            availableStreamsSpinner.setSelection( findIndexOfPlayingStream() );
+        }
+
         listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
         closeButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
     }
 
+    private int findIndexOfPlayingStream() {
+        int index = 0;
+        String url = allelonMediaPlayer.getPlayedUrl();
+
+        for (AvailableStream stream : AvailableStream.values()) {
+            if (stream.getUrl().equals(url)) {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

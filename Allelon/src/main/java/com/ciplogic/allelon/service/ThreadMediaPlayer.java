@@ -45,6 +45,11 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
     }
 
     @Override
+    public String getPlayedUrl() {
+        return delegatePlayer.getPlayedUrl();
+    }
+
+    @Override
     public synchronized void startPlay(String url) {
         delegatePlayer.startPlay(url);
         context.startService(new Intent(context, MediaPlayerIntent.class));

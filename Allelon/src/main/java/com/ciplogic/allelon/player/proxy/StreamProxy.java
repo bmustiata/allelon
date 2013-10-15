@@ -169,7 +169,8 @@ public class StreamProxy implements Runnable {
 
     private HttpResponse download(String url) {
         DefaultHttpClient seed = new DefaultHttpClient();
-        HttpConnectionParams.setConnectionTimeout(seed.getParams(), 3000);
+        HttpConnectionParams.setConnectionTimeout(seed.getParams(), 10000);
+        HttpConnectionParams.setSoTimeout(seed.getParams(), 10000);
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(
                 new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -194,33 +195,35 @@ public class StreamProxy implements Runnable {
         if (request == null) {
             return;
         }
-        Log.d(LOG_TAG, "processing");
-        String url = request.getRequestLine().getUri();
-        HttpResponse realResponse = download(url);
-        if (realResponse == null) {
-            return;
-        }
 
-        Log.d(LOG_TAG, "downloading...");
-
-        InputStream data = realResponse.getEntity().getContent();
-        StatusLine line = realResponse.getStatusLine();
-        HttpResponse response = new BasicHttpResponse(line);
-        response.setHeaders(realResponse.getAllHeaders());
-
-        Log.d(LOG_TAG, "reading headers");
-        StringBuilder httpString = new StringBuilder();
-        httpString.append(response.getStatusLine().toString());
-
-        httpString.append("\r\n");
-        for (Header h : response.getAllHeaders()) {
-            httpString.append(h.getName()).append(": ").append(h.getValue()).append(
-                    "\r\n");
-        }
-        httpString.append("\r\n");
-        Log.d(LOG_TAG, "headers done");
-
+        InputStream data = null;
         try {
+            Log.d(LOG_TAG, "processing");
+            String url = request.getRequestLine().getUri();
+            HttpResponse realResponse = download(url);
+            if (realResponse == null) {
+                return;
+            }
+
+            Log.d(LOG_TAG, "downloading...");
+
+            data = realResponse.getEntity().getContent();
+            StatusLine line = realResponse.getStatusLine();
+            HttpResponse response = new BasicHttpResponse(line);
+            response.setHeaders(realResponse.getAllHeaders());
+
+            Log.d(LOG_TAG, "reading headers");
+            StringBuilder httpString = new StringBuilder();
+            httpString.append(response.getStatusLine().toString());
+
+            httpString.append("\r\n");
+            for (Header h : response.getAllHeaders()) {
+                httpString.append(h.getName()).append(": ").append(h.getValue()).append(
+                        "\r\n");
+            }
+            httpString.append("\r\n");
+            Log.d(LOG_TAG, "headers done");
+
             byte[] buffer = httpString.toString().getBytes();
             int readBytes;
             Log.d(LOG_TAG, "writing to client");

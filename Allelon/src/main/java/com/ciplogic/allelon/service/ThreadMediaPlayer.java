@@ -1,6 +1,7 @@
 package com.ciplogic.allelon.service;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.ciplogic.allelon.MediaPlayerNotificationListener;
 import com.ciplogic.allelon.ToastProvider;
@@ -12,15 +13,18 @@ import com.ciplogic.allelon.player.MediaPlayerListener;
 public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Runnable {
     private static ThreadMediaPlayer INSTANCE;
 
+    private final Context context;
+
     private AMediaPlayer delegatePlayer;
 
     private volatile boolean playingDelegate = false;
 
     private ThreadMediaPlayer(ToastProvider toastProvider,
-                              MediaPlayerNotificationListener mediaPlayerNotificationListener) {
+                              MediaPlayerNotificationListener mediaPlayerNotificationListener, Context context) {
         delegatePlayer = new AllelonMediaPlayer(toastProvider);
         delegatePlayer.addPlayerListener(this);
         delegatePlayer.addPlayerListener(mediaPlayerNotificationListener);
+        this.context = context;
     }
 
     public static ThreadMediaPlayer getInstance(Context context) {
@@ -29,7 +33,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
             MediaPlayerNotificationListener mediaPlayerNotificationListener = new MediaPlayerNotificationListener(streamNotification);
             ToastProvider toastProvider = new ToastProvider(context);
 
-            INSTANCE = new ThreadMediaPlayer(toastProvider, mediaPlayerNotificationListener);
+            INSTANCE = new ThreadMediaPlayer(toastProvider, mediaPlayerNotificationListener, context);
         }
 
         return INSTANCE;
@@ -43,9 +47,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Run
     @Override
     public synchronized void startPlay(String url) {
         delegatePlayer.startPlay(url);
-        Thread daemonThread = new Thread(INSTANCE);
-        daemonThread.setDaemon(true);
-        daemonThread.start();
+        context.startService(new Intent(context, MediaPlayerIntent.class));
     }
 
     @Override

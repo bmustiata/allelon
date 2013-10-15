@@ -9,10 +9,9 @@ import com.ciplogic.allelon.player.proxy.StreamProxy;
 import java.util.ArrayList;
 import java.util.List;
 
-// views have their own media player, thus this object is static.
 public class AllelonMediaPlayer implements AMediaPlayer {
-    private static MediaPlayer mediaPlayer;
-    private static boolean playing;
+    private MediaPlayer mediaPlayer;
+    private String playedUrl;
 
     private StreamProxy proxy;
 
@@ -26,17 +25,21 @@ public class AllelonMediaPlayer implements AMediaPlayer {
 
     @Override
     public boolean isPlaying() {
-        return playing;
+        return playedUrl != null;
     }
 
     @Override
     public void startPlay(String url) {
         if (isPlaying()) {
+            if (isSameStreamAlreadyPlaying(url)) {
+                return;
+            }
+
             stopPlay();
         }
 
         try {
-            playing = true;
+            playedUrl = url;
 
             proxy = new StreamProxy();
             proxy.init();
@@ -57,9 +60,14 @@ public class AllelonMediaPlayer implements AMediaPlayer {
         }
     }
 
+    private boolean isSameStreamAlreadyPlaying(String url) {
+        return playedUrl.equals(url);
+    }
+
     @Override
     public void stopPlay() {
-        playing = false;
+        playedUrl = null;
+
         try {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();

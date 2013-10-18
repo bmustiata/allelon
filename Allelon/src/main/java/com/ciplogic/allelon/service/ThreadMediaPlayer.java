@@ -54,6 +54,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     @Override
     public synchronized void startPlay(String url) {
         if (isPlaying()) {
+            if (isAlreadyPlayingUrl(url)) {
+                return;
+            }
             shutdownPlayer(true);
         }
 
@@ -65,6 +68,10 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
         notifyAll();
 
         RadioActivity.INSTANCE.startService(new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class));
+    }
+
+    private boolean isAlreadyPlayingUrl(String url) {
+        return url.equals(this.url);
     }
 
     private void notifyStartPlaying() {

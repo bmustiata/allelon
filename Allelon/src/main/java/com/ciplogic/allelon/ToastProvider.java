@@ -1,16 +1,22 @@
 package com.ciplogic.allelon;
 
-import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 public class ToastProvider {
-    private Context context;
-
-    public ToastProvider(Context context) {
-        this.context = context;
+    public ToastProvider() {
     }
 
-    public void showToast(String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    public void showToast(final String message) {
+        try {
+            RadioActivity.INSTANCE.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(RadioActivity.INSTANCE, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Error e) {
+            Log.e("Allelon", e.getMessage(), e);
+        }
     }
 }

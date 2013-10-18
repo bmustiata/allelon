@@ -6,8 +6,8 @@ import com.ciplogic.allelon.player.MediaPlayerListener;
 public class MediaPlayerNotificationListener implements MediaPlayerListener {
     private final StreamNotification streamNotification;
 
-    public MediaPlayerNotificationListener(StreamNotification streamNotification) {
-        this.streamNotification = streamNotification;
+    public MediaPlayerNotificationListener() {
+        this.streamNotification = new StreamNotification();
     }
 
     @Override

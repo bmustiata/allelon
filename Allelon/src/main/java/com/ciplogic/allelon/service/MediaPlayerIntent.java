@@ -20,8 +20,7 @@ public class MediaPlayerIntent extends IntentService {
     @Override
     public void onDestroy() {
         // make sure the notification also goes down, if Android nukes our process.
-        new StreamNotification(this).hideNotification();
-
+        new StreamNotification().hideNotification();
         super.onDestroy();
     }
 }

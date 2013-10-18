@@ -2,6 +2,7 @@ package com.ciplogic.allelon.player;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import com.ciplogic.allelon.ToastProvider;
 import com.ciplogic.allelon.player.proxy.StreamConnectionListener;
@@ -21,8 +22,8 @@ public class AllelonMediaPlayer implements AMediaPlayer {
 
     private ToastProvider toastProvider;
 
-    public AllelonMediaPlayer(ToastProvider toastProvider, StreamConnectionListener streamConnectionListener) {
-        this.toastProvider = toastProvider;
+    public AllelonMediaPlayer(StreamConnectionListener streamConnectionListener) {
+        this.toastProvider = new ToastProvider();
         this.streamConnectionListener = streamConnectionListener;
     }
 
@@ -63,9 +64,14 @@ public class AllelonMediaPlayer implements AMediaPlayer {
 
             notifyStartPlaying();
         } catch (Exception e) {
-            stopPlay(); // attempt to close the proxy if it was opened, and reset the playing flag.
-            toastProvider.showToast("Unable to play stream.");
+            Log.e("Allelon", e.getMessage(), e);
+            errorWithTheStream();
         }
+    }
+
+    private void errorWithTheStream() {
+        toastProvider.showToast("Unable to play stream.");
+        stopPlay(); // attempt to close the proxy if it was opened, and reset the playing flag.
     }
 
     private boolean isSameStreamAlreadyPlaying(String url) {
@@ -78,18 +84,28 @@ public class AllelonMediaPlayer implements AMediaPlayer {
 
         try {
             if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
+                closeMediaPlayer();
+                notifyStopPlaying();
             }
         } catch (Exception e) {
             // on purpose swallow it.
         } finally { // we definitelly want to kill the proxy, even if the media player crashes.
-            if (proxy != null) {
-                proxy.stop();
-            }
+            closeProxy();
         }
 
-        notifyStopPlaying();
+    }
+
+    private void closeMediaPlayer() {
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        mediaPlayer = null;
+    }
+
+    private void closeProxy() {
+        if (proxy != null) {
+            proxy.stop();
+        }
+        proxy = null;
     }
 
     private void notifyStartPlaying() {

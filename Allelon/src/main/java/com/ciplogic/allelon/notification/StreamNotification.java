@@ -11,24 +11,21 @@ import com.ciplogic.allelon.R;
 import com.ciplogic.allelon.RadioActivity;
 
 public class StreamNotification {
-    private final Context context;
-
-    public StreamNotification(android.content.Context context) {
-        this.context = context;
+    public StreamNotification() {
     }
 
     public void showNotification(String text) {
-        Intent resultIntent = new Intent(context, RadioActivity.class);
+        Intent resultIntent = new Intent(RadioActivity.INSTANCE, RadioActivity.class);
         PendingIntent playerActivity =
                 PendingIntent.getActivity(
-                        context,
+                        RadioActivity.INSTANCE,
                         0,
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
 
-        Notification playingNotification = new NotificationCompat.Builder(context)
+        Notification playingNotification = new NotificationCompat.Builder(RadioActivity.INSTANCE)
             .setOngoing(true)
             .setAutoCancel(false)
             .setSmallIcon(R.drawable.ic_launcher)
@@ -38,13 +35,13 @@ public class StreamNotification {
             .build();
 
         NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, playingNotification);
     }
 
     public void hideNotification() {
         NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
     }
 

@@ -1,44 +1,41 @@
 package com.ciplogic.allelon.service;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.ciplogic.allelon.MediaPlayerNotificationListener;
+import com.ciplogic.allelon.RadioActivity;
 import com.ciplogic.allelon.ToastProvider;
-import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
 import com.ciplogic.allelon.player.proxy.StreamConnectionListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, StreamConnectionListener, Runnable {
     private static ThreadMediaPlayer INSTANCE;
 
-    private final Context context;
-    private final ToastProvider toastProvider;
+    private final ToastProvider toastProvider = new ToastProvider();
 
     private AMediaPlayer delegatePlayer;
 
-    private volatile boolean playingDelegate = false;
+    private volatile boolean playingThread = false;
     private volatile String url;
 
-    private ThreadMediaPlayer(ToastProvider toastProvider,
-                              MediaPlayerNotificationListener mediaPlayerNotificationListener, Context context) {
-        delegatePlayer = new AllelonMediaPlayer(toastProvider, this);
+    private List<MediaPlayerListener> listenerList = new ArrayList<MediaPlayerListener>();
+
+    private ThreadMediaPlayer() {
+        delegatePlayer = new AllelonMediaPlayer(this);
         delegatePlayer.addPlayerListener(this);
-        delegatePlayer.addPlayerListener(mediaPlayerNotificationListener);
-        this.context = context;
-        this.toastProvider = toastProvider;
+        delegatePlayer.addPlayerListener(new MediaPlayerNotificationListener());
     }
 
     public static ThreadMediaPlayer getInstance(Context context) {
         if (INSTANCE == null) {
-            StreamNotification streamNotification = new StreamNotification(context);
-            MediaPlayerNotificationListener mediaPlayerNotificationListener = new MediaPlayerNotificationListener(streamNotification);
-            ToastProvider toastProvider = new ToastProvider(context);
-
-            INSTANCE = new ThreadMediaPlayer(toastProvider, mediaPlayerNotificationListener, context);
+            INSTANCE = new ThreadMediaPlayer();
         }
 
         return INSTANCE;
@@ -46,7 +43,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
 
     @Override
     public synchronized boolean isPlaying() {
-        return playingDelegate;
+        return playingThread;
     }
 
     @Override
@@ -56,17 +53,54 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
 
     @Override
     public synchronized void startPlay(String url) {
-        playingDelegate = true;
+        if (isPlaying()) {
+            shutdownPlayer(true);
+        }
+
+
+        playingThread = true; // we mark the thread as playing, since we're going to start it anyway
         this.url = url;
+
+        notifyStartPlaying();
         notifyAll();
-        context.startService(new Intent(context, MediaPlayerIntent.class));
+
+        RadioActivity.INSTANCE.startService(new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class));
+    }
+
+    private void notifyStartPlaying() {
+        for (MediaPlayerListener listener : listenerList) {
+            listener.onStartStreaming();
+        }
     }
 
     @Override
-    public synchronized void stopPlay() {
-        playingDelegate = false;
-        url = null;
-        notifyAll();
+    public void stopPlay() {
+        shutdownPlayer(true);
+    }
+
+    private void shutdownPlayer(boolean shouldWait) {
+        if (url != null) { // if is already stopping, avoid deadlock via notify from observers.
+            synchronized (this) {
+                if(url != null) {
+                    url = null;
+                    notifyAll();
+                }
+
+                if (shouldWait) {
+                    waitRunningThreadToShutdown();
+                }
+            }
+        }
+    }
+
+    private void waitRunningThreadToShutdown() {
+        // as long as the thread is still playing I can't start yet doing anything, so wait for it.
+        while (playingThread) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     /**
@@ -74,26 +108,45 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
      */
     @Override
     public void run() {
-        delegatePlayer.startPlay(url);
-        while (playingDelegate) {
+        try {
+            delegatePlayer.startPlay(url);
+
             synchronized (this) {
-                try {
-                    wait(1000);
-                } catch (InterruptedException e) {
+                // while we still have an URL to play, and we're not changing the stream.
+                while (url != null) {
+                    try {
+                        wait(400);
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
+
+            delegatePlayer.stopPlay();
+        } catch (Exception e) {
+            Log.e("Allelon", e.getMessage(), e);
+        } finally {
+            synchronized (this) {
+                playingThread = false;
+                notifyStopPlaying();
+                notifyAll();
+            }
         }
-        delegatePlayer.stopPlay();
+    }
+
+    private void notifyStopPlaying() {
+        for (MediaPlayerListener listener : listenerList) {
+            listener.onStopStreaming();
+        }
     }
 
     @Override
     public synchronized void addPlayerListener(MediaPlayerListener listener) {
-        delegatePlayer.addPlayerListener(listener);
+        listenerList.add(listener);
     }
 
     @Override
     public synchronized void removePlayerListener(MediaPlayerListener listener) {
-        delegatePlayer.removePlayerListener(listener);
+        listenerList.remove(listener);
     }
 
     @Override
@@ -102,18 +155,11 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
 
     @Override
     public void onStopStreaming() {
-        stopPlay();
+        shutdownPlayer(false);
     }
 
     @Override
     public void onStreamClosed() {
-        ((Activity)context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                toastProvider.showToast("Stream connection closed. Allelon will exit.");
-            }
-        });
-
-        stopPlay();
+        shutdownPlayer(false);
     }
 }

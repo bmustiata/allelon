@@ -19,6 +19,8 @@ package com.ciplogic.allelon.player.proxy;
 
 import android.util.Log;
 
+import com.ciplogic.allelon.ToastProvider;
+
 import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -49,6 +51,12 @@ public class StreamProxy implements Runnable {
     private static final String LOG_TAG = StreamProxy.class.getName();
     private final StreamConnectionListener streamConnectionListener;
 
+    private ToastProvider toastProvider = new ToastProvider();
+
+    private volatile boolean isRunning = false;
+    private ServerSocket socket;
+    private Thread thread;
+
     private int port = 0;
 
     public StreamProxy(StreamConnectionListener streamConnectionListener) {
@@ -58,10 +66,6 @@ public class StreamProxy implements Runnable {
     public int getPort() {
         return port;
     }
-
-    private volatile boolean isRunning = true;
-    private ServerSocket socket;
-    private Thread thread;
 
     public void init() {
         try {
@@ -95,21 +99,21 @@ public class StreamProxy implements Runnable {
 
         try {
             thread.interrupt();
-            thread.join(2000); // 2 secs is more than enough
+            thread.join(4000); // 4 secs is more than enough
 
-            Log.d(LOG_TAG, "After 2000ms the thread is alive: " + thread.isAlive());
+            Log.d(LOG_TAG, "After 4000ms the thread is alive: " + thread.isAlive());
             if (thread.isAlive()) {
                 thread.interrupt(); // try again.
-                thread.join(2000); // 2 secs is more than enough
-                Log.d(LOG_TAG, "After yet another 2000ms the thread is alive: " + thread.isAlive());
+                thread.join(4000); // 4 secs is more than enough
+                Log.d(LOG_TAG, "After yet another 4000ms the thread is alive: " + thread.isAlive());
 
                 if (thread.isAlive()) {
                     thread.interrupt(); // last chance.
-                    thread.join(2000);
-                    Log.d(LOG_TAG, "After yet another 2000ms the thread is STILL alive: " + thread.isAlive());
+                    thread.join(4000);
+                    Log.d(LOG_TAG, "After yet another 4000ms the thread is STILL alive: " + thread.isAlive());
 
                     if (thread.isAlive()) {
-                        throw new IllegalStateException("Proxy is still alive after waiting for 6 seconds. Going down with a bang.");
+                        throw new IllegalStateException("Proxy is still alive after waiting for 12 seconds. Going down with a bang.");
                     }
                 }
             }
@@ -124,6 +128,8 @@ public class StreamProxy implements Runnable {
 
     @Override
     public void run() {
+        isRunning = true;
+
         Log.d(LOG_TAG, "running");
         while (isRunning) {
             try {
@@ -175,6 +181,7 @@ public class StreamProxy implements Runnable {
     private HttpResponse download(String url) {
         DefaultHttpClient seed = new DefaultHttpClient();
         HttpConnectionParams.setConnectionTimeout(seed.getParams(), 3000);
+        HttpConnectionParams.setSoTimeout(seed.getParams(), 20000);
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(
                 new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -204,6 +211,7 @@ public class StreamProxy implements Runnable {
         try {
             Log.d(LOG_TAG, "processing");
             String url = request.getRequestLine().getUri();
+            Log.d(LOG_TAG, "URL: " + url);
             HttpResponse realResponse = download(url);
             if (realResponse == null) {
                 return;
@@ -239,14 +247,20 @@ public class StreamProxy implements Runnable {
                 client.getOutputStream().write(buff, 0, readBytes);
             }
         } catch (Exception e) {
-            Log.e("", e.getMessage(), e);
-            isRunning = false;
+            Log.e(LOG_TAG, e.getMessage(), e);
         } finally {
             if (data != null) {
                 Log.d(LOG_TAG, "shutting down remote data connection.");
                 data.close();
             }
+            Log.d(LOG_TAG, "shutting down client data connection.");
             client.close();
+
+            Log.d(LOG_TAG, "running stream proxy completed - notifying onStreamClosed.");
+            isRunning = false;
+
+            toastProvider.showToast("Stream closed.");
+
             streamConnectionListener.onStreamClosed(); // notify that the connection is closed.
         }
     }

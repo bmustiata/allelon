@@ -15,9 +15,10 @@ import android.widget.Spinner;
 
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
+import com.ciplogic.allelon.player.MediaPlayerListener;
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
-public class RadioActivity extends Activity {
+public class RadioActivity extends Activity implements MediaPlayerListener {
     private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
 
     private Button listenButton;
@@ -26,9 +27,14 @@ public class RadioActivity extends Activity {
 
     private boolean firstCallPassed = false;
 
+    public static RadioActivity INSTANCE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        INSTANCE = this;
+
         setContentView(R.layout.activity_radio_listener);
 
         findUiComponents();
@@ -36,6 +42,14 @@ public class RadioActivity extends Activity {
         fixAspectRatioForImageIfNeeded();
         addEventListeners();
         updateControlsStatus();
+
+        allelonMediaPlayer.addPlayerListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        allelonMediaPlayer.removePlayerListener(this);
     }
 
     private void addEventListeners() {
@@ -143,5 +157,24 @@ public class RadioActivity extends Activity {
         getMenuInflater().inflate(R.menu.radio_listener, menu);
         return true;
     }
-    
+
+    @Override
+    public void onStartStreaming() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateControlsStatus();
+            }
+        });
+    }
+
+    @Override
+    public void onStopStreaming() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateControlsStatus();
+            }
+        });
+    }
 }

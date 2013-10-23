@@ -14,7 +14,7 @@ public class MediaPlayerIntent extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        allelonMediaPlayer.run();
+        allelonMediaPlayer.run(intent.getDataString());
     }
 
     @Override

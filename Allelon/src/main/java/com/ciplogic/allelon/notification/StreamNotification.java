@@ -15,6 +15,10 @@ public class StreamNotification {
     }
 
     public void showNotification(String text) {
+        if (RadioActivity.INSTANCE == null) {
+            return; // FIXME: I should probably get the intent context at this stage.
+        }
+
         Intent resultIntent = new Intent(RadioActivity.INSTANCE, RadioActivity.class);
         PendingIntent playerActivity =
                 PendingIntent.getActivity(
@@ -40,6 +44,10 @@ public class StreamNotification {
     }
 
     public void hideNotification() {
+        if (RadioActivity.INSTANCE == null) {
+            return; // FIXME: I should probably get the intent context at this stage.
+        }
+
         NotificationManager notificationManager =
                 (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);

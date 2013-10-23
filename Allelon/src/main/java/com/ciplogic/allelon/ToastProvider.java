@@ -9,6 +9,10 @@ public class ToastProvider {
 
     public void showToast(final String message) {
         try {
+            if (RadioActivity.INSTANCE == null) {
+                return; // FIXME: I should probably get the intent context at this stage.
+            }
+
             RadioActivity.INSTANCE.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

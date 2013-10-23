@@ -2,6 +2,7 @@ package com.ciplogic.allelon.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import com.ciplogic.allelon.MediaPlayerNotificationListener;
@@ -19,10 +20,8 @@ import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.BUFFE
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.PLAYING;
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.STOPPED;
 
-public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, StreamConnectionListener, Runnable {
+public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, StreamConnectionListener {
     private static ThreadMediaPlayer INSTANCE;
-
-    private final ToastProvider toastProvider = new ToastProvider();
 
     private AMediaPlayer delegatePlayer;
 
@@ -73,7 +72,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
         notifyStartPlaying();
         notifyAll();
 
-        RadioActivity.INSTANCE.startService(new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class));
+        Intent service = new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class);
+        service.setData(Uri.parse(url));
+        RadioActivity.INSTANCE.startService(service);
     }
 
     private boolean isAlreadyPlayingUrl(String url) {
@@ -119,8 +120,12 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     /**
      * This simply keeps the thread alive.
      */
-    @Override
-    public void run() {
+    public void run(String givenUrl) {
+        if (this.url == null) { // we were started from the intent directly, there is no activity running.
+            this.url = givenUrl;
+            this.playingThread = true;
+        }
+
         try {
             delegatePlayer.startPlay(url);
             changeStateToBuffering();

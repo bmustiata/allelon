@@ -40,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -237,14 +238,16 @@ public class StreamProxy implements Runnable {
             Log.d(LOG_TAG, "headers done");
 
             byte[] buffer = httpString.toString().getBytes();
-            int readBytes;
+            int readedBytesCount;
             Log.d(LOG_TAG, "writing to client");
-            client.getOutputStream().write(buffer, 0, buffer.length);
+            OutputStream clientOutputStream = client.getOutputStream();
+
+            clientOutputStream.write(buffer, 0, buffer.length);
 
             // Start streaming content.
             byte[] buff = new byte[1024 * 50];
-            while (isRunning && (readBytes = data.read(buff, 0, buff.length)) != -1) {
-                client.getOutputStream().write(buff, 0, readBytes);
+            while (isRunning && (readedBytesCount = data.read(buff, 0, buff.length)) != -1) {
+                clientOutputStream.write(buff, 0, readedBytesCount);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage(), e);

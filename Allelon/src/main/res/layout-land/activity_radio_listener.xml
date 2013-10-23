@@ -34,4 +34,13 @@
         android:layout_marginLeft="11dp"
         android:layout_toLeftOf="@+id/listenButton" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/statusTextView"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/listenButton" />
+
 </RelativeLayout>

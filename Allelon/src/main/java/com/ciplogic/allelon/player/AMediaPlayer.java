@@ -11,4 +11,6 @@ public interface AMediaPlayer {
     void addPlayerListener(MediaPlayerListener listener);
 
     void removePlayerListener(MediaPlayerListener listener);
+
+    int getCurrentSecond();
 }

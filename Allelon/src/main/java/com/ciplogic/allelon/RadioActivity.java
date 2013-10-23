@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
@@ -28,6 +29,8 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     private boolean firstCallPassed = false;
 
     public static RadioActivity INSTANCE;
+    private PlayerStatus playerStatus = PlayerStatus.STOPPED;
+    private TextView statusTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,7 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
         availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
         listenButton = (Button) findViewById(R.id.listenButton);
         closeButton = (Button) findViewById(R.id.closeButton);
+        statusTextView = (TextView) findViewById(R.id.statusTextView);
     }
 
     private void fixAspectRatioForImageIfNeeded() {
@@ -135,6 +139,12 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
 
         listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
         closeButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
+
+        switch (playerStatus) {
+            case STOPPED: statusTextView.setText("Stopped"); break;
+            case BUFFERING: statusTextView.setText("Buffering"); break;
+            case PLAYING: statusTextView.setText("Playing"); break;
+        }
     }
 
     private int findIndexOfPlayingStream() {
@@ -156,6 +166,17 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.radio_listener, menu);
         return true;
+    }
+
+    @Override
+    public void onStatusChange(PlayerStatus playerStatus) {
+        this.playerStatus = playerStatus;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateControlsStatus();
+            }
+        });
     }
 
     @Override

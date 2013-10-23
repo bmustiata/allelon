@@ -15,6 +15,10 @@ import com.ciplogic.allelon.player.proxy.StreamConnectionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.BUFFERING;
+import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.PLAYING;
+import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.STOPPED;
+
 public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, StreamConnectionListener, Runnable {
     private static ThreadMediaPlayer INSTANCE;
 
@@ -26,6 +30,8 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     private volatile String url;
 
     private List<MediaPlayerListener> listenerList = new ArrayList<MediaPlayerListener>();
+
+    private PlayerStatus playerStatus = STOPPED;
 
     private ThreadMediaPlayer() {
         delegatePlayer = new AllelonMediaPlayer(this);
@@ -117,18 +123,34 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     public void run() {
         try {
             delegatePlayer.startPlay(url);
+            changeStateToBuffering();
+
+            int count = 0;
+            int currentSecond, lastPlayedSecond = -1;
 
             synchronized (this) {
                 // while we still have an URL to play, and we're not changing the stream.
                 while (url != null) {
                     try {
                         wait(400);
+                        count++;
+
+                        if (count % 3 == 0) {
+                            currentSecond = delegatePlayer.getCurrentSecond();
+                            if (currentSecond <= lastPlayedSecond) {
+                                changeStateToBuffering();
+                            } else {
+                                lastPlayedSecond = currentSecond;
+                                changeStateToPlaying();
+                            }
+                        }
                     } catch (InterruptedException e) {
                     }
                 }
             }
 
             delegatePlayer.stopPlay();
+            changeStateToStopped();
         } catch (Exception e) {
             Log.e("Allelon", e.getMessage(), e);
         } finally {
@@ -137,6 +159,27 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
                 notifyStopPlaying();
                 notifyAll();
             }
+        }
+    }
+
+    private void changeStateToPlaying() {
+        if (playerStatus != PLAYING) {
+            playerStatus = PLAYING;
+            notifyStatusChange(playerStatus);
+        }
+    }
+
+    private void changeStateToBuffering() {
+        if (playerStatus != BUFFERING) {
+            playerStatus = BUFFERING;
+            notifyStatusChange(playerStatus);
+        }
+    }
+
+    private void changeStateToStopped() {
+        if (playerStatus != STOPPED) {
+            playerStatus = STOPPED;
+            notifyStatusChange(playerStatus);
         }
     }
 
@@ -154,6 +197,21 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     @Override
     public synchronized void removePlayerListener(MediaPlayerListener listener) {
         listenerList.remove(listener);
+    }
+
+    @Override
+    public int getCurrentSecond() {
+        return delegatePlayer.getCurrentSecond();
+    }
+
+    @Override
+    public void onStatusChange(PlayerStatus playerStatus) {
+    }
+
+    private void notifyStatusChange(PlayerStatus playerStatus) {
+        for (MediaPlayerListener listener : listenerList) {
+            listener.onStatusChange(playerStatus);
+        }
     }
 
     @Override

@@ -11,6 +11,10 @@ public class MediaPlayerNotificationListener implements MediaPlayerListener {
     }
 
     @Override
+    public void onStatusChange(PlayerStatus playerStatus) {
+    }
+
+    @Override
     public void onStartStreaming() {
         streamNotification.showNotification("Playing...");
     }

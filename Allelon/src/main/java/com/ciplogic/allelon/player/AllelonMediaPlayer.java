@@ -22,6 +22,8 @@ public class AllelonMediaPlayer implements AMediaPlayer {
 
     private ToastProvider toastProvider;
 
+    private final static String LOG_TAG = AllelonMediaPlayer.class.getName();
+
     public AllelonMediaPlayer(StreamConnectionListener streamConnectionListener) {
         this.toastProvider = new ToastProvider();
         this.streamConnectionListener = streamConnectionListener;
@@ -67,6 +69,22 @@ public class AllelonMediaPlayer implements AMediaPlayer {
             Log.e("Allelon", e.getMessage(), e);
             errorWithTheStream();
         }
+    }
+
+    private void notifyError(int i, int i2) {
+        Log.d(LOG_TAG, String.format("onErrorListener: %d, %d", i, i2));
+    }
+
+    private void notifyInfo(int i, int i2) {
+        Log.d(LOG_TAG, String.format("onInfoListener: %d, %d", i, i2));
+    }
+
+    private void notifyBufferUpdate(int i) {
+        Log.d(LOG_TAG, String.format("onBufferingUpdate: %d", i));
+    }
+
+    private void notifyCompletion() {
+        Log.d(LOG_TAG, String.format("onCompletion"));
     }
 
     private void errorWithTheStream() {
@@ -128,5 +146,10 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     @Override
     public void removePlayerListener(MediaPlayerListener listener) {
         mediaPlayerListeners.remove(listener);
+    }
+
+    @Override
+    public int getCurrentSecond() {
+        return mediaPlayer.getCurrentPosition();
     }
 }

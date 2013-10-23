@@ -29,7 +29,7 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     private boolean firstCallPassed = false;
 
     public static RadioActivity INSTANCE;
-    private PlayerStatus playerStatus = PlayerStatus.STOPPED;
+    private PlayerStatus playerStatus = allelonMediaPlayer.getPlayerStatus();
     private TextView statusTextView;
 
     @Override

@@ -13,4 +13,6 @@ public interface AMediaPlayer {
     void removePlayerListener(MediaPlayerListener listener);
 
     int getCurrentSecond();
+
+    MediaPlayerListener.PlayerStatus getPlayerStatus();
 }

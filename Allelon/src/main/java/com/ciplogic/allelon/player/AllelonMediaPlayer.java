@@ -152,4 +152,9 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     public int getCurrentSecond() {
         return mediaPlayer.getCurrentPosition();
     }
+
+    @Override
+    public MediaPlayerListener.PlayerStatus getPlayerStatus() {
+        throw new IllegalStateException("Not implemented. Some listeners should be set on the mediaPlayer if really needed.");
+    }
 }

@@ -205,6 +205,11 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     }
 
     @Override
+    public PlayerStatus getPlayerStatus() {
+        return playerStatus;
+    }
+
+    @Override
     public void onStatusChange(PlayerStatus playerStatus) {
     }
 

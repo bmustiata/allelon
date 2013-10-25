@@ -68,6 +68,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
         this.url = url;
 
         notifyStartPlaying();
+        changeStateToBuffering();
         notifyAll();
 
         Intent service = new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class);

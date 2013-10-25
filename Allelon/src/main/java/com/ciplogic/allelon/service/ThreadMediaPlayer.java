@@ -7,11 +7,9 @@ import android.util.Log;
 
 import com.ciplogic.allelon.MediaPlayerNotificationListener;
 import com.ciplogic.allelon.RadioActivity;
-import com.ciplogic.allelon.ToastProvider;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
-import com.ciplogic.allelon.player.proxy.StreamConnectionListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,7 @@ import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.BUFFE
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.PLAYING;
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.STOPPED;
 
-public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, StreamConnectionListener {
+public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
     private static ThreadMediaPlayer INSTANCE;
 
     private AMediaPlayer delegatePlayer;
@@ -33,7 +31,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
     private PlayerStatus playerStatus = STOPPED;
 
     private ThreadMediaPlayer() {
-        delegatePlayer = new AllelonMediaPlayer(this);
+        delegatePlayer = new AllelonMediaPlayer();
         delegatePlayer.addPlayerListener(this);
         delegatePlayer.addPlayerListener(new MediaPlayerNotificationListener());
     }
@@ -230,11 +228,6 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Str
 
     @Override
     public void onStopStreaming() {
-        shutdownPlayer(false);
-    }
-
-    @Override
-    public void onStreamClosed() {
         shutdownPlayer(false);
     }
 }

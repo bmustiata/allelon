@@ -50,7 +50,6 @@ import java.util.StringTokenizer;
 
 public class StreamProxy implements Runnable {
     private static final String LOG_TAG = StreamProxy.class.getName();
-    private final StreamConnectionListener streamConnectionListener;
 
     private ToastProvider toastProvider = new ToastProvider();
 
@@ -60,8 +59,7 @@ public class StreamProxy implements Runnable {
 
     private int port = 0;
 
-    public StreamProxy(StreamConnectionListener streamConnectionListener) {
-        this.streamConnectionListener = streamConnectionListener;
+    public StreamProxy() {
     }
 
     public int getPort() {
@@ -259,13 +257,8 @@ public class StreamProxy implements Runnable {
             Log.d(LOG_TAG, "shutting down client data connection.");
             client.close();
 
-            Log.d(LOG_TAG, "running stream proxy completed - notifying onStreamClosed.");
-            isRunning = false;
-
-            toastProvider.showToast("Stream closed.");
-
-            streamConnectionListener.onStreamClosed(); // notify that the connection is closed.
-        }
+            Log.d(LOG_TAG, "running stream proxy completed.");
+       }
     }
 
 

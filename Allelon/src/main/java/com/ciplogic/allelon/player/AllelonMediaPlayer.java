@@ -49,8 +49,7 @@ public class AllelonMediaPlayer implements AMediaPlayer {
         try {
             playedUrl = url;
 
-            proxy = new StreamProxy();
-            proxy.init();
+            proxy = StreamProxy.getInstance();
             proxy.start();
 
             url = String.format("http://127.0.0.1:%d/%s", proxy.getPort(), url);
@@ -66,22 +65,6 @@ public class AllelonMediaPlayer implements AMediaPlayer {
             Log.e("Allelon", e.getMessage(), e);
             errorWithTheStream();
         }
-    }
-
-    private void notifyError(int i, int i2) {
-        Log.d(LOG_TAG, String.format("onErrorListener: %d, %d", i, i2));
-    }
-
-    private void notifyInfo(int i, int i2) {
-        Log.d(LOG_TAG, String.format("onInfoListener: %d, %d", i, i2));
-    }
-
-    private void notifyBufferUpdate(int i) {
-        Log.d(LOG_TAG, String.format("onBufferingUpdate: %d", i));
-    }
-
-    private void notifyCompletion() {
-        Log.d(LOG_TAG, String.format("onCompletion"));
     }
 
     private void errorWithTheStream() {

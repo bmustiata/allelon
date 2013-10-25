@@ -59,14 +59,25 @@ public class StreamProxy implements Runnable {
 
     private int port = 0;
 
-    public StreamProxy() {
+    private static StreamProxy INSTANCE;
+    private InputStream data;
+
+    private StreamProxy() {
+    }
+
+    public static StreamProxy getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new StreamProxy();
+            INSTANCE.init();
+        }
+        return INSTANCE;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void init() {
+    private void init() {
         try {
             socket = new ServerSocket(port, 0, InetAddress.getByAddress(new byte[] {127,0,0,1}));
             socket.setSoTimeout(5000);
@@ -85,6 +96,10 @@ public class StreamProxy implements Runnable {
             throw new IllegalStateException("Cannot start proxy; it has not been initialized.");
         }
 
+        if (isRunning) {
+            throw new IllegalStateException("Thread is already running.");
+        }
+
         thread = new Thread(this);
         thread.start();
     }
@@ -94,6 +109,14 @@ public class StreamProxy implements Runnable {
 
         if (thread == null) {
             throw new IllegalStateException("Cannot stop proxy; it has not been started.");
+        }
+
+        if (data != null) {
+            try {
+                data.close();
+            } catch (IOException e) {
+                Log.e("Allelon", e.getMessage(), e);
+            }
         }
 
         try {
@@ -117,10 +140,8 @@ public class StreamProxy implements Runnable {
                 }
             }
 
-            socket.close(); // should attempt to cleanup the socket.
+            //socket.close(); // should attempt to cleanup the socket.
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -206,11 +227,15 @@ public class StreamProxy implements Runnable {
             return;
         }
 
-        InputStream data = null;
         try {
+            if (data != null) {
+                data.close();
+            }
+
             Log.d(LOG_TAG, "processing");
             String url = request.getRequestLine().getUri();
             Log.d(LOG_TAG, "URL: " + url);
+
             HttpResponse realResponse = download(url);
             if (realResponse == null) {
                 return;
@@ -260,7 +285,4 @@ public class StreamProxy implements Runnable {
             Log.d(LOG_TAG, "running stream proxy completed.");
        }
     }
-
-
-
 }

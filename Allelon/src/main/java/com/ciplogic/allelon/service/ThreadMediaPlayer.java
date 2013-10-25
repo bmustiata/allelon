@@ -33,7 +33,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
     private ThreadMediaPlayer() {
         delegatePlayer = new AllelonMediaPlayer();
         delegatePlayer.addPlayerListener(this);
-        delegatePlayer.addPlayerListener(new MediaPlayerNotificationListener());
+        this.addPlayerListener(new MediaPlayerNotificationListener());
     }
 
     public static ThreadMediaPlayer getInstance(Context context) {

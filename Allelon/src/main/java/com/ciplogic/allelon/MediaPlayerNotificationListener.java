@@ -12,11 +12,15 @@ public class MediaPlayerNotificationListener implements MediaPlayerListener {
 
     @Override
     public void onStatusChange(PlayerStatus playerStatus) {
+        switch (playerStatus) {
+            case PLAYING: streamNotification.showNotification("Playing..."); break;
+            case BUFFERING: streamNotification.showNotification("Buffering..."); break;
+            case STOPPED: streamNotification.hideNotification(); break;
+        }
     }
 
     @Override
     public void onStartStreaming() {
-        streamNotification.showNotification("Playing...");
     }
 
     @Override

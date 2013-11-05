@@ -19,6 +19,18 @@ public class StreamNotification {
             return; // FIXME: I should probably get the intent context at this stage.
         }
 
+        Notification playingNotification = buildNotification(text);
+
+        NotificationManager notificationManager =
+                (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, playingNotification);
+    }
+
+    public Notification buildNotification(String text) {
+        if (RadioActivity.INSTANCE == null) {
+            return null; // FIXME: I should probably get the intent context at this stage.
+        }
+
         Intent resultIntent = new Intent(RadioActivity.INSTANCE, RadioActivity.class);
         PendingIntent playerActivity =
                 PendingIntent.getActivity(
@@ -28,19 +40,14 @@ public class StreamNotification {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-
-        Notification playingNotification = new NotificationCompat.Builder(RadioActivity.INSTANCE)
-            .setOngoing(true)
-            .setAutoCancel(false)
-            .setSmallIcon(R.drawable.ic_launcher)
-            .setContentTitle("Allelon")
-            .setContentText(text)
-            .setContentIntent(playerActivity)
-            .build();
-
-        NotificationManager notificationManager =
-                (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, playingNotification);
+        return new NotificationCompat.Builder(RadioActivity.INSTANCE)
+                .setOngoing(true)
+                .setAutoCancel(false)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Allelon")
+                .setContentText(text)
+                .setContentIntent(playerActivity)
+                .build();
     }
 
     public void hideNotification() {

@@ -14,7 +14,12 @@ public class MediaPlayerIntent extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        allelonMediaPlayer.run(intent.getDataString());
+        try {
+            startForeground(0, new StreamNotification().buildNotification("Starting service..."));
+            allelonMediaPlayer.run(intent.getDataString());
+        } finally {
+            stopForeground(true);
+        }
     }
 
     @Override

@@ -120,6 +120,8 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
      * This simply keeps the thread alive.
      */
     public void run(String givenUrl) {
+        Log.d("Allelon", "Playing stream via intent: " + givenUrl);
+
         if (this.url == null) { // we were started from the intent directly, there is no activity running.
             this.url = givenUrl;
             this.playingThread = true;

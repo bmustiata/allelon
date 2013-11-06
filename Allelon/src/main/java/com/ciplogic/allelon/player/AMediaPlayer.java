@@ -15,4 +15,7 @@ public interface AMediaPlayer {
     int getCurrentSecond();
 
     MediaPlayerListener.PlayerStatus getPlayerStatus();
+
+    void setVolume(int i);
+    int getVolume();
 }

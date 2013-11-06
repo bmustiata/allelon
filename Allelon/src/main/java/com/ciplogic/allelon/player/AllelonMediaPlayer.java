@@ -1,7 +1,6 @@
 package com.ciplogic.allelon.player;
 
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.ciplogic.allelon.ToastProvider;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllelonMediaPlayer implements AMediaPlayer {
-    private MediaPlayer mediaPlayer;
+    private VolumeMediaPlayer mediaPlayer;
     private String playedUrl;
 
     private StreamProxy proxy;
@@ -21,6 +20,8 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     private ToastProvider toastProvider;
 
     private final static String LOG_TAG = AllelonMediaPlayer.class.getName();
+
+    private int volume = 100; // keep the volume as well
 
     public AllelonMediaPlayer() {
         this.toastProvider = new ToastProvider();
@@ -54,9 +55,10 @@ public class AllelonMediaPlayer implements AMediaPlayer {
 
             url = String.format("http://127.0.0.1:%d/%s", proxy.getPort(), url);
 
-            mediaPlayer = new MediaPlayer();
+            mediaPlayer = new VolumeMediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(url);
+            mediaPlayer.setVolume(volume);
             mediaPlayer.prepare();
             mediaPlayer.start();
 
@@ -136,5 +138,19 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     @Override
     public MediaPlayerListener.PlayerStatus getPlayerStatus() {
         throw new IllegalStateException("Not implemented. Some listeners should be set on the mediaPlayer if really needed.");
+    }
+
+    @Override
+    public void setVolume(int volume) {
+        this.volume = volume;
+
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(volume);
+        }
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
     }
 }

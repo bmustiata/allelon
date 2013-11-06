@@ -216,6 +216,16 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
     }
 
     @Override
+    public void setVolume(int volume) {
+        delegatePlayer.setVolume(volume);
+    }
+
+    @Override
+    public int getVolume() {
+        return delegatePlayer.getVolume();
+    }
+
+    @Override
     public void onStatusChange(PlayerStatus playerStatus) {
     }
 

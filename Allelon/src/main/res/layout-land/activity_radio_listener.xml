@@ -41,6 +41,29 @@
         android:text="Large Text"
         android:id="@+id/statusTextView"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/listenButton" />
+        android:layout_alignRight="@+id/listenButton"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Volume"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/availableStreams"
+        android:layout_marginTop="10dp" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/volumeSeekBar"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_marginLeft="10dp"
+        android:layout_toLeftOf="@+id/statusTextView"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:max="100" />
 
 </RelativeLayout>

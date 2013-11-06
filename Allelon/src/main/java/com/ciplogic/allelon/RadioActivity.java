@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,6 +26,8 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     private Button listenButton;
     private Button closeButton;
     private Spinner availableStreamsSpinner;
+
+    private SeekBar volumeSeekBar;
 
     private boolean firstCallPassed = false;
 
@@ -73,6 +76,21 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
             }
         });
 
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                allelonMediaPlayer.setVolume(i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +113,7 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
         listenButton = (Button) findViewById(R.id.listenButton);
         closeButton = (Button) findViewById(R.id.closeButton);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
+        volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
     }
 
     private void fixAspectRatioForImageIfNeeded() {
@@ -139,6 +158,7 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
 
         listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
         closeButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
+        volumeSeekBar.setProgress( allelonMediaPlayer.getVolume() );
 
         switch (playerStatus) {
             case STOPPED: statusTextView.setText("Stopped"); break;

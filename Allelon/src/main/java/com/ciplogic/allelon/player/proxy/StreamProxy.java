@@ -60,7 +60,9 @@ public class StreamProxy implements Runnable {
     private int port = 0;
 
     private static StreamProxy INSTANCE;
+
     private InputStream data;
+    private Socket client;
 
     private StreamProxy() {
     }
@@ -119,6 +121,14 @@ public class StreamProxy implements Runnable {
             }
         }
 
+        if (client != null) {
+            try {
+                client.close();
+            } catch (IOException e) {
+                Log.e("Allelon", e.getMessage(), e);
+            }
+        }
+
         try {
             thread.interrupt();
             thread.join(4000); // 4 secs is more than enough
@@ -153,7 +163,7 @@ public class StreamProxy implements Runnable {
         Log.d(LOG_TAG, "running");
         while (isRunning) {
             try {
-                Socket client = socket.accept();
+                client = socket.accept();
                 if (client == null) {
                     continue;
                 }
@@ -269,7 +279,15 @@ public class StreamProxy implements Runnable {
 
             // Start streaming content.
             byte[] buff = new byte[1024 * 50];
-            while (isRunning && (readedBytesCount = data.read(buff, 0, buff.length)) != -1) {
+
+            while (isRunning) { // pretty shady implementation, to just go down instead of hanging reading for data.
+                synchronized (this) {
+                    while (isRunning && data.available() <= 0) {
+                        wait(100);
+                    }
+                }
+
+                readedBytesCount = data.read(buff, 0, buff.length);
                 clientOutputStream.write(buff, 0, readedBytesCount);
             }
         } catch (Exception e) {

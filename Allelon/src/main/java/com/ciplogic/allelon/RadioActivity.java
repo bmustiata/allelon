@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -119,8 +119,10 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     private void fixAspectRatioForImageIfNeeded() {
         if (isVerticalLayout()) {
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
-            float aspect = (171.0f / 410.0f);
-            imageView.setLayoutParams(new LinearLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
+//            float aspect = (171.0f / 410.0f); // 713 / 960
+            float aspect = (960.0f / 713.0f); // 713 / 960
+            //imageView.setLayoutParams(new LinearLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
+            imageView.setLayoutParams(new RelativeLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
         }
     }
 

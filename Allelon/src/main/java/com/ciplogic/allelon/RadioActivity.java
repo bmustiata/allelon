@@ -1,7 +1,9 @@
 package com.ciplogic.allelon;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -26,6 +28,9 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     private Button listenButton;
     private Button closeButton;
     private Spinner availableStreamsSpinner;
+
+    private Button websiteButton;
+    private Button contactButton;
 
     private SeekBar volumeSeekBar;
 
@@ -106,6 +111,26 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
                 updateControlsStatus();
             }
         });
+
+        websiteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri data = Uri.parse("http://allelon.at");
+                intent.setData(data);
+                startActivity(intent);
+            }
+        });
+
+        contactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri data = Uri.parse("mailto:contact@allelon.com?subject=Contact&body=");
+                intent.setData(data);
+                startActivity(intent);
+            }
+        });
     }
 
     private void findUiComponents() {
@@ -114,6 +139,8 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
         closeButton = (Button) findViewById(R.id.closeButton);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
+        websiteButton = (Button) findViewById(R.id.websiteButton);
+        contactButton = (Button) findViewById(R.id.contactButton);
     }
 
     private void fixAspectRatioForImageIfNeeded() {

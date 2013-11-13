@@ -24,14 +24,32 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="13dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Website"
+        android:layout_alignBottom="@+id/listenButton"
+        android:id="@+id/websiteButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/listenButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/listenButton"
+        android:text="Contact"
+        android:id="@+id/contactButton"
+        android:layout_toRightOf="@+id/websiteButton"
+        android:layout_alignTop="@+id/websiteButton" />
+
+
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/availableStreams"
-        android:entries="@array/available_streams"
         android:layout_alignBottom="@+id/listenButton"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="11dp"
+        android:entries="@array/available_streams"
+        android:layout_toRightOf="@+id/contactButton"
         android:layout_toLeftOf="@+id/listenButton" />
 
     <TextView
@@ -50,9 +68,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Volume"
         android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/availableStreams"
-        android:layout_marginTop="10dp" />
+        android:layout_marginLeft="13dp"
+        android:layout_alignBottom="@+id/statusTextView"
+        android:layout_alignParentLeft="true" />
 
     <SeekBar
         android:layout_width="wrap_content"

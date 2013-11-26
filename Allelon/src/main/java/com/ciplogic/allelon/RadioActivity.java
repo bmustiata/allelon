@@ -144,13 +144,20 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     }
 
     private void fixAspectRatioForImageIfNeeded() {
+        float aspect;
+
         if (isVerticalLayout()) {
-            ImageView imageView = (ImageView) findViewById(R.id.imageView);
-//            float aspect = (171.0f / 410.0f); // 713 / 960
-            float aspect = (960.0f / 713.0f); // 713 / 960
-            //imageView.setLayoutParams(new LinearLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
-            imageView.setLayoutParams(new RelativeLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
+            aspect = (960.0f / 713.0f); // 713 / 960
+        } else {
+            aspect = (171.0f / 410.0f); // 713 / 960
         }
+
+        resizeImageToFillScreen(aspect);
+    }
+
+    private void resizeImageToFillScreen(float aspect) {
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setLayoutParams(new RelativeLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
     }
 
     private boolean isVerticalLayout() {

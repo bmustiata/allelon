@@ -13,7 +13,8 @@
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="android:Theme.Black">
+    <!-- android:Theme.Black.NoTitleBar-->
+    <style name="AppTheme" parent="android:Theme.Holo.NoActionBar">
     </style>
 
 </resources>

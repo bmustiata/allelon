@@ -8,7 +8,7 @@ public class CurrentSongNameProvider {
     private CurrentSongFetcherThread currentSongFetcherThread;
 
     public void setUrl(String url) {
-        currentTitle = "..."; // when the URL changes, we need to reload the title.
+        currentTitle = url == null? "" : "..."; // when the URL changes, we need to reload the title.
 
         if (currentSongFetcherThread != null) {
             currentSongFetcherThread.stop();

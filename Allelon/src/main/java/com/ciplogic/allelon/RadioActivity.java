@@ -39,6 +39,7 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
     public static RadioActivity INSTANCE;
     private PlayerStatus playerStatus = allelonMediaPlayer.getPlayerStatus();
     private TextView statusTextView;
+    private TextView currentSongTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +139,7 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
         listenButton = (Button) findViewById(R.id.listenButton);
         closeButton = (Button) findViewById(R.id.closeButton);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
+        currentSongTextView = (TextView) findViewById(R.id.currentSong);
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
         websiteButton = (Button) findViewById(R.id.websiteButton);
         contactButton = (Button) findViewById(R.id.contactButton);
@@ -201,6 +203,8 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
             case BUFFERING: statusTextView.setText("Buffering"); break;
             case PLAYING: statusTextView.setText("Playing"); break;
         }
+
+        currentSongTextView.setText( allelonMediaPlayer.getCurrentTitle() );
     }
 
     private int findIndexOfPlayingStream() {

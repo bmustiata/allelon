@@ -136,6 +136,11 @@ public class AllelonMediaPlayer implements AMediaPlayer {
     }
 
     @Override
+    public String getCurrentTitle() {
+        throw new IllegalStateException("Not implemented. The current title is not derived from the stream.");
+    }
+
+    @Override
     public MediaPlayerListener.PlayerStatus getPlayerStatus() {
         throw new IllegalStateException("Not implemented. Some listeners should be set on the mediaPlayer if really needed.");
     }

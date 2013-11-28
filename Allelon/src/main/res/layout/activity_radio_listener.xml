@@ -27,10 +27,11 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Large Text"
                 android:id="@+id/statusTextView"
-                android:layout_gravity="right|center_vertical"
+                android:layout_gravity="center_vertical|left"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -63,6 +64,17 @@
             android:id="@+id/availableStreams"
             android:entries="@array/available_streams"
             android:layout_gravity="center"
+            android:layout_above="@+id/currentSong"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="..."
+            android:id="@+id/currentSong"
             android:layout_above="@+id/relativeLayout"
             android:layout_alignParentLeft="true" />
 

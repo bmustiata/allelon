@@ -10,6 +10,8 @@ import com.ciplogic.allelon.RadioActivity;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
+import com.ciplogic.allelon.songname.CurrentSongNameChangeListener;
+import com.ciplogic.allelon.songname.CurrentSongNameProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.BUFFE
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.PLAYING;
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.STOPPED;
 
-public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
+public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, CurrentSongNameChangeListener {
     private static ThreadMediaPlayer INSTANCE;
 
     private AMediaPlayer delegatePlayer;
@@ -30,10 +32,13 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
 
     private PlayerStatus playerStatus = STOPPED;
 
+    private CurrentSongNameProvider currentSongNameProvider = new CurrentSongNameProvider();
+
     private ThreadMediaPlayer() {
         delegatePlayer = new AllelonMediaPlayer();
         delegatePlayer.addPlayerListener(this);
         this.addPlayerListener(new MediaPlayerNotificationListener());
+        currentSongNameProvider.setCurrentSongNameChangeListener(this);
     }
 
     public static ThreadMediaPlayer getInstance(Context context) {
@@ -65,7 +70,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
 
 
         playingThread = true; // we mark the thread as playing, since we're going to start it anyway
-        this.url = url;
+        setUrl(url);
 
         notifyStartPlaying();
         changeStateToBuffering();
@@ -74,6 +79,11 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
         Intent service = new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class);
         service.setData(Uri.parse(url));
         RadioActivity.INSTANCE.startService(service);
+    }
+
+    private void setUrl(String url) {
+        this.url = url;
+        currentSongNameProvider.setUrl(url);
     }
 
     private boolean isAlreadyPlayingUrl(String url) {
@@ -95,7 +105,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
         if (url != null) { // if is already stopping, avoid deadlock via notify from observers.
             synchronized (this) {
                 if(url != null) {
-                    url = null;
+                    setUrl(null);
                     notifyAll();
                 }
 
@@ -123,7 +133,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
         Log.d("Allelon", "Playing stream via intent: " + givenUrl);
 
         if (this.url == null) { // we were started from the intent directly, there is no activity running.
-            this.url = givenUrl;
+            setUrl(givenUrl);
             this.playingThread = true;
         }
 
@@ -211,6 +221,11 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
     }
 
     @Override
+    public String getCurrentTitle() {
+        return currentSongNameProvider.getCurrentTitle();
+    }
+
+    @Override
     public PlayerStatus getPlayerStatus() {
         return playerStatus;
     }
@@ -242,5 +257,10 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer {
     @Override
     public void onStopStreaming() {
         shutdownPlayer(false);
+    }
+
+    @Override
+    public void onTitleChange(String title) {
+        notifyStatusChange(playerStatus); // simply to update the UI, probably a more specific update would make sense.
     }
 }

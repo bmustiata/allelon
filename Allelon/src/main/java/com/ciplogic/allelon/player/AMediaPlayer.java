@@ -9,10 +9,11 @@ public interface AMediaPlayer {
     void stopPlay();
 
     void addPlayerListener(MediaPlayerListener listener);
-
     void removePlayerListener(MediaPlayerListener listener);
 
     int getCurrentSecond();
+
+    String getCurrentTitle();
 
     MediaPlayerListener.PlayerStatus getPlayerStatus();
 

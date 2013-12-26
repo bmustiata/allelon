@@ -10,7 +10,7 @@ import android.widget.Button;
 public class ContactActivity extends Activity {
     private Button websiteButton;
     private Button contactButton;
-
+    private Button phoneButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,7 @@ public class ContactActivity extends Activity {
     private void findUiComponents() {
         websiteButton = (Button) findViewById(R.id.websiteButton);
         contactButton = (Button) findViewById(R.id.contactButton);
+        phoneButton = (Button) findViewById(R.id.phoneButton);
     }
 
     private void addEventListeners() {
@@ -43,6 +44,16 @@ public class ContactActivity extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 Uri data = Uri.parse("mailto:contact@allelon.at?subject=Contact&body=");
+                intent.setData(data);
+                startActivity(intent);
+            }
+        });
+
+        phoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                Uri data = Uri.parse("tel:+436603797281");
                 intent.setData(data);
                 startActivity(intent);
             }

@@ -1,16 +1,11 @@
 package com.ciplogic.allelon;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,11 +38,10 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
         INSTANCE = this;
 
-        setContentView(R.layout.activity_radio_listener);
+        setContentView(R.layout.play_activity);
 
         findUiComponents();
 
-        fixAspectRatioForImageIfNeeded();
         addEventListeners();
         updateControlsStatus();
 
@@ -117,35 +111,6 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         statusTextView = (TextView) findViewById(R.id.statusTextView);
         currentSongTextView = (TextView) findViewById(R.id.currentSong);
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
-    }
-
-    private void fixAspectRatioForImageIfNeeded() {
-        float aspect;
-
-        if (isVerticalLayout()) {
-            aspect = (960.0f / 713.0f); // 713 / 960
-        } else {
-            aspect = (171.0f / 410.0f); // 713 / 960
-        }
-
-        resizeImageToFillScreen(aspect);
-    }
-
-    private void resizeImageToFillScreen(float aspect) {
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        imageView.setLayoutParams(new RelativeLayout.LayoutParams((int) getWidth(), (int) (aspect * getWidth())));
-    }
-
-    private boolean isVerticalLayout() {
-        return this.getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    }
-
-    public float getWidth() {
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        return outMetrics.widthPixels;
     }
 
     private String getSelectedStream() {

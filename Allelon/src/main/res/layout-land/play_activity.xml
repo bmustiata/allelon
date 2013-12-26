@@ -3,14 +3,21 @@
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="281dp"
-        android:id="@+id/imageView"
-        android:background="@drawable/logo_allelon"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/volumeSeekBar"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/currentSong"
+        android:layout_alignParentRight="true"
+        >
+        <ImageView android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:src="@drawable/logo_allelon"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside">
+        </ImageView>
+    </FrameLayout>
 
     <Button
         android:layout_width="wrap_content"
@@ -36,16 +43,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/availableStreams"
-        android:layout_alignBottom="@+id/listenButton"
         android:entries="@array/available_streams"
-        android:layout_toRightOf="@+id/contactButton"
+        android:layout_alignBottom="@+id/listenButton"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
         android:layout_toLeftOf="@+id/listenButton" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="statusTextView"
         android:id="@+id/statusTextView"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/listenButton"
@@ -86,7 +94,7 @@
         android:focusableInTouchMode="true"
         android:text="..."
         android:id="@+id/currentSong"
-        android:layout_above="@+id/websiteButton"
-        android:layout_alignParentLeft="true" />
+        android:layout_above="@+id/availableStreams"
+        android:layout_alignLeft="@+id/textView" />
 
 </RelativeLayout>

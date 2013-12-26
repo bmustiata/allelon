@@ -31,6 +31,15 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent">
 
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="281dp"
+                        android:id="@+id/imageView"
+                        android:background="@drawable/allelon_back"
+                        android:scaleType="fitCenter"
+                        android:adjustViewBounds="true"
+                        android:layout_alignParentLeft="true" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -66,24 +75,6 @@
                             android:max="100"
                             android:layout_marginRight="10dp" />
                     </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="fill_parent"
-                        android:layout_height="281dp"
-                        android:id="@+id/imageView"
-                        android:background="@drawable/allelon_back"
-                        android:scaleType="fitCenter"
-                        android:adjustViewBounds="true"
-                        android:layout_alignParentLeft="true" />
-
-                    <Spinner
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/availableStreams"
-                        android:entries="@array/available_streams"
-                        android:layout_gravity="center"
-                        android:layout_above="@+id/currentSong"
-                        android:layout_alignParentLeft="true" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -129,22 +120,14 @@
                             android:layout_alignParentRight="true"
                             android:layout_marginRight="10dp" />
 
-                        <Button
-                            android:layout_width="wrap_content"
+                        <Spinner
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:text="Website"
-                            android:id="@+id/websiteButton"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentLeft="true"
-                            />
-
-                        <Button
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Contact"
-                            android:id="@+id/contactButton"
-                            android:layout_alignParentTop="true"
-                            android:layout_toRightOf="@+id/websiteButton" />
+                            android:id="@+id/availableStreams"
+                            android:entries="@array/available_streams"
+                            android:layout_gravity="center"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/listenButton" />
                     </RelativeLayout>
                 </RelativeLayout>
 

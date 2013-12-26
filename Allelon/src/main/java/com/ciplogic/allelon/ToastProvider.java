@@ -9,14 +9,14 @@ public class ToastProvider {
 
     public void showToast(final String message) {
         try {
-            if (RadioActivity.INSTANCE == null) {
+            if (PlayActivity.INSTANCE == null) {
                 return; // FIXME: I should probably get the intent context at this stage.
             }
 
-            RadioActivity.INSTANCE.runOnUiThread(new Runnable() {
+            PlayActivity.INSTANCE.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(RadioActivity.INSTANCE, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PlayActivity.INSTANCE, message, Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Error e) {

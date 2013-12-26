@@ -21,9 +21,9 @@ public class AllelonActivity extends TabActivity {
     }
     private void setTabs()
     {
-        addTab("Home", R.drawable.tab_home, RadioActivity.class);
-        addTab("Home", R.drawable.tab_home, RadioActivity.class);
-        addTab("Home", R.drawable.tab_home, RadioActivity.class);
+        addTab("Play", R.drawable.tab_home, PlayActivity.class);
+        addTab("History", R.drawable.tab_home, PlayActivity.class);
+        addTab("Contact", R.drawable.tab_home, PlayActivity.class);
     }
 
     private void addTab(String labelId, int drawableId, Class<?> c)

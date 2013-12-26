@@ -22,7 +22,7 @@ import com.ciplogic.allelon.player.AvailableStream;
 import com.ciplogic.allelon.player.MediaPlayerListener;
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
-public class RadioActivity extends Activity implements MediaPlayerListener {
+public class PlayActivity extends Activity implements MediaPlayerListener {
     private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
 
     private Button listenButton;
@@ -36,7 +36,8 @@ public class RadioActivity extends Activity implements MediaPlayerListener {
 
     private boolean firstCallPassed = false;
 
-    public static RadioActivity INSTANCE;
+    public static PlayActivity INSTANCE;
+
     private PlayerStatus playerStatus = allelonMediaPlayer.getPlayerStatus();
     private TextView statusTextView;
     private TextView currentSongTextView;

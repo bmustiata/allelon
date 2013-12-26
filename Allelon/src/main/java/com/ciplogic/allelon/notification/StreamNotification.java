@@ -7,40 +7,40 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
+import com.ciplogic.allelon.PlayActivity;
 import com.ciplogic.allelon.R;
-import com.ciplogic.allelon.RadioActivity;
 
 public class StreamNotification {
     public StreamNotification() {
     }
 
     public void showNotification(String text) {
-        if (RadioActivity.INSTANCE == null) {
+        if (PlayActivity.INSTANCE == null) {
             return; // FIXME: I should probably get the intent context at this stage.
         }
 
         Notification playingNotification = buildNotification(text);
 
         NotificationManager notificationManager =
-                (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) PlayActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, playingNotification);
     }
 
     public Notification buildNotification(String text) {
-        if (RadioActivity.INSTANCE == null) {
+        if (PlayActivity.INSTANCE == null) {
             return null; // FIXME: I should probably get the intent context at this stage.
         }
 
-        Intent resultIntent = new Intent(RadioActivity.INSTANCE, RadioActivity.class);
+        Intent resultIntent = new Intent(PlayActivity.INSTANCE, PlayActivity.class);
         PendingIntent playerActivity =
                 PendingIntent.getActivity(
-                        RadioActivity.INSTANCE,
+                        PlayActivity.INSTANCE,
                         0,
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        return new NotificationCompat.Builder(RadioActivity.INSTANCE)
+        return new NotificationCompat.Builder(PlayActivity.INSTANCE)
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher)
@@ -51,12 +51,12 @@ public class StreamNotification {
     }
 
     public void hideNotification() {
-        if (RadioActivity.INSTANCE == null) {
+        if (PlayActivity.INSTANCE == null) {
             return; // FIXME: I should probably get the intent context at this stage.
         }
 
         NotificationManager notificationManager =
-                (NotificationManager) RadioActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) PlayActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
     }
 

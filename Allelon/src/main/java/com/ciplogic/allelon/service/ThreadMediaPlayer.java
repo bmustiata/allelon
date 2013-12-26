@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.ciplogic.allelon.MediaPlayerNotificationListener;
-import com.ciplogic.allelon.RadioActivity;
+import com.ciplogic.allelon.PlayActivity;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
@@ -76,9 +76,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Cur
         changeStateToBuffering();
         notifyAll();
 
-        Intent service = new Intent(RadioActivity.INSTANCE, MediaPlayerIntent.class);
+        Intent service = new Intent(PlayActivity.INSTANCE, MediaPlayerIntent.class);
         service.setData(Uri.parse(url));
-        RadioActivity.INSTANCE.startService(service);
+        PlayActivity.INSTANCE.startService(service);
     }
 
     private void setUrl(String url) {

@@ -10,6 +10,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Contact"
         android:id="@+id/textView"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true" />
 

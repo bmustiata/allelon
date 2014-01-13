@@ -2,6 +2,7 @@ package com.ciplogic.allelon.lastplay;
 
 import android.util.Log;
 
+import com.ciplogic.allelon.SelectedStream;
 import com.ciplogic.allelon.remote.HttpPoll;
 import com.ciplogic.allelon.remote.HttpPollCallback;
 
@@ -32,14 +33,30 @@ public class LastPlayProvider {
     public void addPlayListListener(LastPlayChangeListener lastPlayChangeListener) {
         this.lastPlayChangeListener = lastPlayChangeListener;
 
-        httpPoll = new HttpPoll("http://allelon.at:8000/played.html?sid=2", 6000, new HttpPollCallback() {
+        if (httpPoll != null) {
+            markSongListLoading();
+            httpPoll.stop();
+        }
+
+        httpPoll = new HttpPoll(SelectedStream.getSelectedStream().getHistoryUrl(), 60000, new HttpPollCallback() {
             @Override
             public void run(String content) {
+                if (content == null) {
+                    Log.w("Allelon", "Unable to read URL.");
+                    return;
+                }
+
                 Log.d("Allelon", content);
 
                 parsePlayedSongs(content);
 
-                LastPlayProvider.this.lastPlayChangeListener.onChange();
+                // the view is changed, and the polling works but there is no listener active.
+                if (LastPlayProvider.this.lastPlayChangeListener != null) {
+                    LastPlayProvider.this.lastPlayChangeListener.onChange();
+                } else {
+                    markSongListLoading();
+                    httpPoll.stop();
+                }
             }
         });
     }

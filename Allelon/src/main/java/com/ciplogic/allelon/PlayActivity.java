@@ -58,10 +58,12 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                SelectedStream.setSelectedStream(getSelectedStream());
+
                 // FIXME: the very first call actually restarts the stream in some scenarios.
                 // probably a better solution related to the Activity lifecycle would be in place.
                 if (firstCallPassed && allelonMediaPlayer.isPlaying()) {
-                    allelonMediaPlayer.startPlay(getSelectedStream());
+                    allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
                 }
 
                 firstCallPassed = true;
@@ -90,7 +92,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                allelonMediaPlayer.startPlay(getSelectedStream());
+                allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
                 updateControlsStatus();
             }
         });
@@ -113,12 +115,12 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
     }
 
-    private String getSelectedStream() {
+    private AvailableStream getSelectedStream() {
         AvailableStream stream = AvailableStream.fromLabel(
                 availableStreamsSpinner.getSelectedItem().toString()
         );
 
-        return stream.getUrl();
+        return stream;
     }
 
     @Override

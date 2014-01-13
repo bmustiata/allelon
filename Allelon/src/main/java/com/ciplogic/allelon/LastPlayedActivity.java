@@ -2,17 +2,14 @@ package com.ciplogic.allelon;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.ciplogic.allelon.lastplay.LastPlayChangeListener;
 import com.ciplogic.allelon.lastplay.LastPlayProvider;
-import com.ciplogic.allelon.lastplay.Song;
+import com.ciplogic.allelon.lastplay.LastPlayedDataAdapter;
+import com.ciplogic.allelon.player.AvailableStream;
 
-public class LastPlayedActivity extends Activity implements LastPlayChangeListener {
+public class LastPlayedActivity extends Activity implements LastPlayChangeListener, StreamChangedListener {
     private ListView lastPlayedListView;
 
     @Override
@@ -29,9 +26,10 @@ public class LastPlayedActivity extends Activity implements LastPlayChangeListen
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-
         LastPlayProvider.INSTANCE.removePlayListener();
+        SelectedStream.removeStreamChangeListener(this);
+
+        super.onDestroy();
     }
 
     private void findUiComponents() {
@@ -39,47 +37,23 @@ public class LastPlayedActivity extends Activity implements LastPlayChangeListen
     }
 
     private void addEventListeners() {
-        lastPlayedListView.setAdapter(createDataAdaptor());
-        LastPlayProvider.INSTANCE.addPlayListListener(this);
+        LastPlayProvider.INSTANCE.addPlayListListener(LastPlayedActivity.this);
+        SelectedStream.addStreamChangeListener(this);
+
+        // FIXME: apparently there is a bug in the listview, that doesn't allow the adapter to already have data
+        // and then be assigned to the ListView.
+        LastPlayedDataAdapter lastPlayedDataAdapter = new LastPlayedDataAdapter(this, lastPlayedListView);
+        lastPlayedListView.setAdapter(lastPlayedDataAdapter);
     }
 
     @Override
     public void onChange() {
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                lastPlayedListView.setAdapter(createDataAdaptor());
-            }
-        });
+        ((LastPlayedDataAdapter) lastPlayedListView.getAdapter()).reload();
     }
 
-    private BaseAdapter createDataAdaptor() {
-        return new BaseAdapter() {
-            @Override
-            public int getCount() {
-                return LastPlayProvider.INSTANCE.getSongList().size();
-            }
-
-            @Override
-            public Song getItem(int position) {
-                return LastPlayProvider.INSTANCE.getSongList().get(position);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return position;
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View result = LastPlayedActivity.this.getLayoutInflater().inflate(R.layout.song_entry, null);
-
-                ((TextView) result.findViewById(R.id.titleTextView)).setText( this.getItem(position).getTitle() );
-                ((TextView) result.findViewById(R.id.authorTextView)).setText( this.getItem(position).getAuthor() );
-                ((TextView) result.findViewById(R.id.timeTextView)).setText( this.getItem(position).getTime() );
-
-                return result;
-            }
-        };
+    @Override
+    public void onStreamChange(AvailableStream stream) {
+        LastPlayProvider.INSTANCE.removePlayListener();
+        LastPlayProvider.INSTANCE.addPlayListListener(LastPlayedActivity.this);
     }
 }

@@ -1,19 +1,32 @@
 package com.ciplogic.allelon.player;
 
 public enum AvailableStream {
-    CONTEMPORAN("http://87.118.82.77:8000/stream/1/", "Contemporan", "http://allelon.at:8000/currentsong?sid=1"),
-    CLASSIC("http://87.118.82.77:8000/stream/2/", "Classic", "http://allelon.at:8000/currentsong?sid=2"),
-    CONTEMPORAN_AAC("http://87.118.82.77:8000/stream/3/", "Contemporan AAC", "http://allelon.at:8000/currentsong?sid=3");
+    CONTEMPORAN("http://87.118.82.77:8000/stream/1/",
+            "Contemporan",
+            "http://allelon.at:8000/currentsong?sid=1",
+            "http://allelon.at:8000/played.html?sid=1"),
+
+    CLASSIC("http://87.118.82.77:8000/stream/2/",
+            "Classic",
+            "http://allelon.at:8000/currentsong?sid=2",
+            "http://allelon.at:8000/played.html?sid=2"),
+
+    CONTEMPORAN_AAC("http://87.118.82.77:8000/stream/3/",
+            "Contemporan AAC",
+            "http://allelon.at:8000/currentsong?sid=3",
+            "http://allelon.at:8000/played.html?sid=3");
 
 
     private final String url;
     private final String label;
     private final String titleUrl;
+    private final String historyUrl;
 
-    AvailableStream(String url, String label, String titleUrl) {
+    AvailableStream(String url, String label, String titleUrl, String historyUrl) {
         this.url = url;
         this.label = label;
         this.titleUrl = titleUrl;
+        this.historyUrl = historyUrl;
     }
 
     public String getUrl() {
@@ -22,6 +35,10 @@ public enum AvailableStream {
 
     public String getTitleUrl() {
         return titleUrl;
+    }
+
+    public String getHistoryUrl() {
+        return historyUrl;
     }
 
     public static AvailableStream fromLabel(String label) {

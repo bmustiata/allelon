@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
+import com.ciplogic.allelon.AllelonActivity;
 import com.ciplogic.allelon.PlayActivity;
 import com.ciplogic.allelon.R;
 
+// FIXME: this shouldn't depend on the PlayActivity probably.
 public class StreamNotification {
     public StreamNotification() {
     }
@@ -31,7 +33,7 @@ public class StreamNotification {
             return null; // FIXME: I should probably get the intent context at this stage.
         }
 
-        Intent resultIntent = new Intent(PlayActivity.INSTANCE, PlayActivity.class);
+        Intent resultIntent = new Intent(PlayActivity.INSTANCE, AllelonActivity.class);
         PendingIntent playerActivity =
                 PendingIntent.getActivity(
                         PlayActivity.INSTANCE,

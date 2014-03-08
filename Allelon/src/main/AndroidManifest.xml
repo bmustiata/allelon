@@ -41,6 +41,11 @@
             android:label="@string/app_name" >
         </activity>
 
+        <activity
+            android:name=".ChatActivity"
+            android:label="@string/app_name" >
+        </activity>
+
         <receiver android:name=".call.PhoneCallBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />

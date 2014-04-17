@@ -14,7 +14,12 @@ public enum AvailableStream {
     CONTEMPORAN_AAC("http://87.118.82.77:8000/stream/3/",
             "Contemporan AAC",
             "http://allelon.at:8000/currentsong?sid=3",
-            "http://allelon.at:8000/played.html?sid=3");
+            "http://allelon.at:8000/played.html?sid=3"),
+
+    CLASSIC_AAC("http://87.118.82.77:8000/stream/4/",
+            "Classic AAC",
+            "http://allelon.at:8000/currentsong?sid=4",
+            "http://allelon.at:8000/played.html?sid=4");
 
 
     private final String url;

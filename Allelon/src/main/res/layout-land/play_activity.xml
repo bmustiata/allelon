@@ -19,6 +19,16 @@
         </ImageView>
     </FrameLayout>
 
+    <ImageButton
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/closeApplicationButton"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/availableStreams"
+        android:background="@drawable/close_button"
+        android:padding="0dp"
+        android:layout_marginTop="10dp" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/stop"
-        android:id="@+id/closeButton"
+        android:id="@+id/stopPlayButton"
         android:layout_marginRight="13dp"
         android:layout_alignTop="@+id/listenButton"
         android:layout_alignParentRight="true"
@@ -65,9 +75,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Volume"
         android:id="@+id/textView"
-        android:layout_marginLeft="13dp"
+        android:layout_alignBaseline="@+id/statusTextView"
         android:layout_alignBottom="@+id/statusTextView"
-        android:layout_alignParentLeft="true" />
+        android:layout_toRightOf="@+id/closeApplicationButton"
+        android:layout_marginLeft="10dp" />
 
     <SeekBar
         android:layout_width="wrap_content"
@@ -85,9 +96,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
         android:ellipsize="marquee"
         android:scrollHorizontally="true"
         android:focusable="true"
@@ -95,6 +103,6 @@
         android:text="..."
         android:id="@+id/currentSong"
         android:layout_above="@+id/availableStreams"
-        android:layout_alignLeft="@+id/textView" />
+        android:layout_alignLeft="@+id/availableStreams" />
 
 </RelativeLayout>

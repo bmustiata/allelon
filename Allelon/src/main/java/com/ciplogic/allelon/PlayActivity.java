@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,7 +20,9 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
 
     private Button listenButton;
-    private Button closeButton;
+    private Button stopPlayButton;
+    private ImageButton closeApplicationButton;
+
     private Spinner availableStreamsSpinner;
 
     private SeekBar volumeSeekBar;
@@ -97,11 +100,18 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
             }
         });
 
-        closeButton.setOnClickListener(new View.OnClickListener() {
+        stopPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 allelonMediaPlayer.stopPlay();
                 updateControlsStatus();
+            }
+        });
+
+        closeApplicationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.exit(0);
             }
         });
     }
@@ -109,7 +119,8 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     private void findUiComponents() {
         availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
         listenButton = (Button) findViewById(R.id.listenButton);
-        closeButton = (Button) findViewById(R.id.closeButton);
+        stopPlayButton = (Button) findViewById(R.id.stopPlayButton);
+        closeApplicationButton = (ImageButton) findViewById(R.id.closeApplicationButton);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
         currentSongTextView = (TextView) findViewById(R.id.currentSong);
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
@@ -136,7 +147,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         }
 
         listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
-        closeButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
+        stopPlayButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
         volumeSeekBar.setProgress( allelonMediaPlayer.getVolume() );
 
         switch (playerStatus) {

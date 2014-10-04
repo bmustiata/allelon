@@ -11,6 +11,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
 import com.ciplogic.allelon.player.MediaPlayerListener;
@@ -111,6 +112,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         closeApplicationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new StreamNotification().hideNotification();
                 System.exit(0);
             }
         });

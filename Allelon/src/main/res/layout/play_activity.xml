@@ -126,15 +126,29 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="10dp" />
 
-                <Spinner
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/availableStreams"
-                    android:entries="@array/available_streams"
+
+                <RadioGroup
+                    android:orientation="vertical"
                     android:layout_gravity="center"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:layout_toLeftOf="@+id/listenButton" />
+                    android:layout_toLeftOf="@+id/listenButton"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                        <RadioButton
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Contemporan"
+                            android:id="@+id/contemporanRadioButton"
+                            android:checked="true" />
+
+                        <RadioButton
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Classic"
+                            android:id="@+id/classicRadioButton" />
+                </RadioGroup>
             </RelativeLayout>
 
         </RelativeLayout>

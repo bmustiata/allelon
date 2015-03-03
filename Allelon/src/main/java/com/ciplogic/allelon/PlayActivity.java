@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ciplogic.allelon.notification.StreamNotification;
@@ -24,8 +24,6 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     private Button stopPlayButton;
     private ImageButton closeApplicationButton;
 
-    private Spinner availableStreamsSpinner;
-
     private SeekBar volumeSeekBar;
 
     private boolean firstCallPassed = false;
@@ -35,6 +33,9 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     private PlayerStatus playerStatus = allelonMediaPlayer.getPlayerStatus();
     private TextView statusTextView;
     private TextView currentSongTextView;
+
+    private RadioButton contemporanRadioButton;
+    private RadioButton classicRadioButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,22 +60,17 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     }
 
     private void addEventListeners() {
-        availableStreamsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        contemporanRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                SelectedStream.setSelectedStream(getSelectedStream());
-
-                // FIXME: the very first call actually restarts the stream in some scenarios.
-                // probably a better solution related to the Activity lifecycle would be in place.
-                if (firstCallPassed && allelonMediaPlayer.isPlaying()) {
-                    allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
-                }
-
-                firstCallPassed = true;
+            public void onClick(View v) {
+                selectStream( AvailableStream.CONTEMPORAN );
             }
+        });
 
+        classicRadioButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void onClick(View v) {
+                selectStream( AvailableStream.CLASSIC );
             }
         });
 
@@ -118,22 +114,31 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         });
     }
 
+    /**
+     * Selects the given selected stream, and starts playing it.
+     * @param selectedStream
+     */
+    private void selectStream(AvailableStream selectedStream) {
+        SelectedStream.setSelectedStream(selectedStream);
+
+        // FIXME: the very first call actually restarts the stream in some scenarios.
+        // probably a better solution related to the Activity lifecycle would be in place.
+        if (firstCallPassed && allelonMediaPlayer.isPlaying()) {
+            allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
+        }
+
+        firstCallPassed = true;
+    }
+
     private void findUiComponents() {
-        availableStreamsSpinner = (Spinner) findViewById(R.id.availableStreams);
+        contemporanRadioButton = (RadioButton) findViewById(R.id.contemporanRadioButton);
+        classicRadioButton = (RadioButton) findViewById(R.id.classicRadioButton);
         listenButton = (Button) findViewById(R.id.listenButton);
         stopPlayButton = (Button) findViewById(R.id.stopPlayButton);
         closeApplicationButton = (ImageButton) findViewById(R.id.closeApplicationButton);
         statusTextView = (TextView) findViewById(R.id.statusTextView);
         currentSongTextView = (TextView) findViewById(R.id.currentSong);
         volumeSeekBar = (SeekBar) findViewById(R.id.volumeSeekBar);
-    }
-
-    private AvailableStream getSelectedStream() {
-        AvailableStream stream = AvailableStream.fromLabel(
-                availableStreamsSpinner.getSelectedItem().toString()
-        );
-
-        return stream;
     }
 
     @Override
@@ -145,7 +150,11 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     private void updateControlsStatus() {
         if (allelonMediaPlayer.isPlaying()) {
-            availableStreamsSpinner.setSelection( findIndexOfPlayingStream() );
+            if (findIndexOfPlayingStream() % 2 == 0) { // contemporan selected
+                contemporanRadioButton.toggle();
+            } else { // classical selected
+                classicRadioButton.toggle();
+            }
         }
 
         listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );

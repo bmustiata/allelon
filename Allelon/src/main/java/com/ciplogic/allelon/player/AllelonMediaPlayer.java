@@ -4,7 +4,6 @@ import android.media.AudioManager;
 import android.util.Log;
 
 import com.ciplogic.allelon.ToastProvider;
-import com.ciplogic.allelon.player.proxy.StreamProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +11,6 @@ import java.util.List;
 public class AllelonMediaPlayer implements AMediaPlayer {
     private VolumeMediaPlayer mediaPlayer;
     private String playedUrl;
-
-    private StreamProxy proxy;
 
     private List<MediaPlayerListener> mediaPlayerListeners = new ArrayList<MediaPlayerListener>();
 
@@ -50,11 +47,6 @@ public class AllelonMediaPlayer implements AMediaPlayer {
         try {
             playedUrl = url;
 
-            proxy = StreamProxy.getInstance();
-            proxy.start();
-
-            url = String.format("http://127.0.0.1:%d/%s", proxy.getPort(), url);
-
             mediaPlayer = new VolumeMediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setDataSource(url);
@@ -89,23 +81,13 @@ public class AllelonMediaPlayer implements AMediaPlayer {
             }
         } catch (Exception e) {
             // on purpose swallow it.
-        } finally { // we definitelly want to kill the proxy, even if the media player crashes.
-            closeProxy();
         }
-
     }
 
     private void closeMediaPlayer() {
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
-    }
-
-    private void closeProxy() {
-        if (proxy != null) {
-            proxy.stop();
-        }
-        proxy = null;
     }
 
     private void notifyStartPlaying() {

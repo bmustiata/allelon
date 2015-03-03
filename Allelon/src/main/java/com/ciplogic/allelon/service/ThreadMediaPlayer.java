@@ -2,14 +2,14 @@ package com.ciplogic.allelon.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
 
 import com.ciplogic.allelon.MediaPlayerNotificationListener;
 import com.ciplogic.allelon.PlayActivity;
-import com.ciplogic.allelon.player.AMediaPlayer;
-import com.ciplogic.allelon.player.AllelonMediaPlayer;
 import com.ciplogic.allelon.player.MediaPlayerListener;
+import com.ciplogic.allelon.player.VolumeMediaPlayer;
 import com.ciplogic.allelon.songname.CurrentSongNameChangeListener;
 import com.ciplogic.allelon.songname.CurrentSongNameProvider;
 
@@ -20,10 +20,8 @@ import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.BUFFE
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.PLAYING;
 import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.STOPPED;
 
-public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, CurrentSongNameChangeListener {
+public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameChangeListener {
     private static ThreadMediaPlayer INSTANCE;
-
-    private AMediaPlayer delegatePlayer;
 
     private volatile boolean playingThread = false;
     private volatile String url;
@@ -34,9 +32,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Cur
 
     private CurrentSongNameProvider currentSongNameProvider = new CurrentSongNameProvider();
 
+    private int volume = 100;
+
     private ThreadMediaPlayer() {
-        delegatePlayer = new AllelonMediaPlayer();
-        delegatePlayer.addPlayerListener(this);
         this.addPlayerListener(new MediaPlayerNotificationListener());
         currentSongNameProvider.setCurrentSongNameChangeListener(this);
     }
@@ -49,17 +47,14 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Cur
         return INSTANCE;
     }
 
-    @Override
     public synchronized boolean isPlaying() {
         return playingThread;
     }
 
-    @Override
     public String getPlayedUrl() {
         return url;
     }
 
-    @Override
     public synchronized void startPlay(String url) {
         if (isPlaying()) {
             if (isAlreadyPlayingUrl(url)) {
@@ -96,7 +91,6 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Cur
         }
     }
 
-    @Override
     public void stopPlay() {
         shutdownPlayer(true);
     }
@@ -138,43 +132,54 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Cur
         }
 
         try {
-            delegatePlayer.startPlay(url);
-            changeStateToBuffering();
-
             int count = 0;
             int currentSecond, lastPlayedSecond = -1;
 
             synchronized (this) {
-                // while we still have an URL to play, and we're not changing the stream.
-                while (url != null) {
-                    try {
-                        wait(400);
-                        count++;
+                VolumeMediaPlayer mediaPlayer = null;
 
-                        if (count % 3 == 0) {
-                            currentSecond = delegatePlayer.getCurrentSecond();
-                            if (currentSecond <= lastPlayedSecond) {
-                                changeStateToBuffering();
-                            } else {
-                                lastPlayedSecond = currentSecond;
-                                changeStateToPlaying();
+                try {
+                    mediaPlayer = new VolumeMediaPlayer();
+                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    mediaPlayer.setDataSource(url);
+                    mediaPlayer.setVolume(volume);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+
+                    changeStateToBuffering();
+
+                    // while we still have an URL to play, and we're not changing the stream.
+                    while (url != null) {
+                        try {
+                            wait(200);
+                            count++;
+
+                            mediaPlayer.setVolume(volume); // FIXME
+
+                            if (count % 3 == 0) {
+                                currentSecond = mediaPlayer.getCurrentPosition();
+                                if (currentSecond <= lastPlayedSecond) {
+                                    changeStateToBuffering();
+                                } else {
+                                    lastPlayedSecond = currentSecond;
+                                    changeStateToPlaying();
+                                }
                             }
+                        } catch (InterruptedException e) {
                         }
-                    } catch (InterruptedException e) {
                     }
-                }
-            }
 
-            delegatePlayer.stopPlay();
-            changeStateToStopped();
-        } catch (Exception e) {
-            Log.e("Allelon", e.getMessage(), e);
-        } finally {
-            synchronized (this) {
+                } finally {
+                    mediaPlayer.stop();
+                }
+
+                changeStateToStopped();
                 playingThread = false;
-                notifyStopPlaying();
                 notifyAll();
             }
+            notifyStopPlaying();
+        } catch (Exception e) {
+            Log.e("Allelon", e.getMessage(), e);
         }
     }
 
@@ -205,39 +210,28 @@ public class ThreadMediaPlayer implements MediaPlayerListener, AMediaPlayer, Cur
         }
     }
 
-    @Override
     public synchronized void addPlayerListener(MediaPlayerListener listener) {
         listenerList.add(listener);
     }
 
-    @Override
     public synchronized void removePlayerListener(MediaPlayerListener listener) {
         listenerList.remove(listener);
     }
 
-    @Override
-    public int getCurrentSecond() {
-        return delegatePlayer.getCurrentSecond();
-    }
-
-    @Override
     public String getCurrentTitle() {
         return currentSongNameProvider.getCurrentTitle();
     }
 
-    @Override
     public PlayerStatus getPlayerStatus() {
         return playerStatus;
     }
 
-    @Override
     public void setVolume(int volume) {
-        delegatePlayer.setVolume(volume);
+        this.volume = volume;
     }
 
-    @Override
     public int getVolume() {
-        return delegatePlayer.getVolume();
+        return volume;
     }
 
     @Override

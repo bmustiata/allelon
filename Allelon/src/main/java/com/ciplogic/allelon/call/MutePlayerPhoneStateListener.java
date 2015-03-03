@@ -4,15 +4,15 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.ciplogic.allelon.player.AMediaPlayer;
+import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
 public class MutePlayerPhoneStateListener extends PhoneStateListener {
-    private final AMediaPlayer allelonMediaPlayer;
+    private final ThreadMediaPlayer allelonMediaPlayer;
 
     private int oldVolume;
     private boolean muted;
 
-    public MutePlayerPhoneStateListener(AMediaPlayer allelonMediaPlayer) {
+    public MutePlayerPhoneStateListener(ThreadMediaPlayer allelonMediaPlayer) {
         this.allelonMediaPlayer = allelonMediaPlayer;
     }
 

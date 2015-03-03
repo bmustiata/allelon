@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
-import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
 public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
@@ -14,7 +13,7 @@ public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(context);
+        ThreadMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(context);
 
         TelephonyManager telephony = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         MutePlayerPhoneStateListener customPhoneListener = getMutePlayerPhoneStateListener(allelonMediaPlayer);
@@ -22,7 +21,7 @@ public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
         telephony.listen(customPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
-    private MutePlayerPhoneStateListener getMutePlayerPhoneStateListener(AMediaPlayer allelonMediaPlayer) {
+    private MutePlayerPhoneStateListener getMutePlayerPhoneStateListener(ThreadMediaPlayer allelonMediaPlayer) {
         if (mutePlayerPhoneStateListener == null) {
             mutePlayerPhoneStateListener = new MutePlayerPhoneStateListener(allelonMediaPlayer);
         }

@@ -4,21 +4,20 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.ciplogic.allelon.notification.StreamNotification;
-import com.ciplogic.allelon.player.AMediaPlayer;
 import com.ciplogic.allelon.player.AvailableStream;
 import com.ciplogic.allelon.player.MediaPlayerListener;
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
 public class PlayActivity extends Activity implements MediaPlayerListener {
-    private AMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
+    private ThreadMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
 
     private Button listenButton;
     private Button stopPlayButton;
@@ -36,6 +35,8 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     private RadioButton contemporanRadioButton;
     private RadioButton classicRadioButton;
+
+    private RadioGroup availableStreamsRadioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +61,17 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     }
 
     private void addEventListeners() {
-        contemporanRadioButton.setOnClickListener(new View.OnClickListener() {
+        availableStreamsRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                selectStream( AvailableStream.CONTEMPORAN );
-            }
-        });
-
-        classicRadioButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectStream( AvailableStream.CLASSIC );
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.contemporanRadioButton:
+                        selectStream(AvailableStream.CONTEMPORAN);
+                        break;
+                    case R.id.classicRadioButton:
+                        selectStream(AvailableStream.CLASSIC);
+                        break;
+                }
             }
         });
 
@@ -131,6 +132,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     }
 
     private void findUiComponents() {
+        availableStreamsRadioGroup = (RadioGroup) findViewById(R.id.availableStreams);
         contemporanRadioButton = (RadioButton) findViewById(R.id.contemporanRadioButton);
         classicRadioButton = (RadioButton) findViewById(R.id.classicRadioButton);
         listenButton = (Button) findViewById(R.id.listenButton);

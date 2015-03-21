@@ -1,6 +1,7 @@
 package com.ciplogic.allelon;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -66,10 +67,14 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.contemporanRadioButton:
-                        selectStream(AvailableStream.CONTEMPORAN);
+                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
+                                AvailableStream.CONTEMPORAN_AAC :
+                                AvailableStream.CONTEMPORAN);
                         break;
                     case R.id.classicRadioButton:
-                        selectStream(AvailableStream.CLASSIC);
+                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
+                                AvailableStream.CLASSIC_AAC :
+                                AvailableStream.CLASSIC);
                         break;
                 }
             }

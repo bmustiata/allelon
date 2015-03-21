@@ -1,22 +1,22 @@
 package com.ciplogic.allelon.player;
 
 public enum AvailableStream {
-    CONTEMPORAN("http://87.118.82.77:8000/stream/1/",
+    CONTEMPORAN("http://allelon.at:8000/stream/1/",
             "Contemporan",
             "http://allelon.at:8000/currentsong?sid=1",
             "http://allelon.at:8000/played.html?sid=1"),
 
-    CLASSIC("http://87.118.82.77:8000/stream/2/",
+    CLASSIC("http://allelon.at:8000/stream/2/",
             "Classic",
             "http://allelon.at:8000/currentsong?sid=2",
             "http://allelon.at:8000/played.html?sid=2"),
 
-    CONTEMPORAN_AAC("http://87.118.82.77:8000/stream/3/",
+    CONTEMPORAN_AAC("http://allelon.at:8000/stream/3/",
             "Contemporan AAC",
             "http://allelon.at:8000/currentsong?sid=3",
             "http://allelon.at:8000/played.html?sid=3"),
 
-    CLASSIC_AAC("http://87.118.82.77:8000/stream/4/",
+    CLASSIC_AAC("http://allelon.at:8000/stream/4/",
             "Classic AAC",
             "http://allelon.at:8000/currentsong?sid=4",
             "http://allelon.at:8000/played.html?sid=4");

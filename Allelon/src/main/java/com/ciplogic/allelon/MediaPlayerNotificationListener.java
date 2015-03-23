@@ -11,11 +11,23 @@ public class MediaPlayerNotificationListener implements MediaPlayerListener {
     }
 
     @Override
-    public void onStatusChange(PlayerStatus playerStatus) {
-        switch (playerStatus) {
-            case PLAYING: streamNotification.showNotification("Playing..."); break;
-            case BUFFERING: streamNotification.showNotification("Buffering..."); break;
-            case STOPPED: streamNotification.hideNotification(); break;
+    public void onStatusChange(PlayerStatusChangeEvent playerStatus) {
+        switch (playerStatus.playerStatus) {
+            case PLAYING:
+                // if we have a song title, we use that as the status
+                if (playerStatus.song != null && !playerStatus.song.matches("^\\s*$")) {
+                    streamNotification.showNotification( playerStatus.song );
+                } else {
+                    streamNotification.showNotification("Playing...");
+                }
+
+                break;
+            case BUFFERING:
+                streamNotification.showNotification("Buffering...");
+                break;
+            case STOPPED:
+                streamNotification.hideNotification();
+                break;
         }
     }
 

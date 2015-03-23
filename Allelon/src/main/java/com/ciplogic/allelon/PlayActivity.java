@@ -30,7 +30,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     public static PlayActivity INSTANCE;
 
-    private PlayerStatus playerStatus = allelonMediaPlayer.getPlayerStatus();
+    private PlayerStatusChangeEvent playerStatus = allelonMediaPlayer.getPlayerStatus();
     private TextView statusTextView;
     private TextView currentSongTextView;
 
@@ -168,7 +168,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         stopPlayButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
         volumeSeekBar.setProgress( allelonMediaPlayer.getVolume() );
 
-        switch (playerStatus) {
+        switch (playerStatus.playerStatus) {
             case STOPPED: statusTextView.setText("Stopped"); break;
             case BUFFERING: statusTextView.setText("Buffering"); break;
             case PLAYING: statusTextView.setText("Playing"); break;
@@ -199,7 +199,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     }
 
     @Override
-    public void onStatusChange(PlayerStatus playerStatus) {
+    public void onStatusChange(PlayerStatusChangeEvent playerStatus) {
         this.playerStatus = playerStatus;
         runOnUiThread(new Runnable() {
             @Override

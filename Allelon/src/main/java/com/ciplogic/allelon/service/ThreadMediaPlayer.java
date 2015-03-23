@@ -28,7 +28,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
 
     private List<MediaPlayerListener> listenerList = new ArrayList<MediaPlayerListener>();
 
-    private PlayerStatus playerStatus = STOPPED;
+    private PlayerStatusChangeEvent playerStatus = new PlayerStatusChangeEvent(STOPPED);
+    private String lastSong = "";
+    private String currentSong = "";
 
     private CurrentSongNameProvider currentSongNameProvider = new CurrentSongNameProvider();
 
@@ -183,23 +185,25 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
         }
     }
 
+    // FIXME: This contraption with || !song.equals(lastSong), and assigning the lastSong is
+    // since the update of the title happens sometimes while BUFFERING, so we need to
     private void changeStateToPlaying() {
-        if (playerStatus != PLAYING) {
-            playerStatus = PLAYING;
+        if (playerStatus.playerStatus != PLAYING || !playerStatus.song.equals(currentSong)) {
+            playerStatus = new PlayerStatusChangeEvent(PLAYING, currentSong);
             notifyStatusChange(playerStatus);
         }
     }
 
     private void changeStateToBuffering() {
-        if (playerStatus != BUFFERING) {
-            playerStatus = BUFFERING;
+        if (playerStatus.playerStatus != BUFFERING) {
+            playerStatus = new PlayerStatusChangeEvent(BUFFERING, playerStatus.song);
             notifyStatusChange(playerStatus);
         }
     }
 
     private void changeStateToStopped() {
-        if (playerStatus != STOPPED) {
-            playerStatus = STOPPED;
+        if (playerStatus.playerStatus != STOPPED) {
+            playerStatus = new PlayerStatusChangeEvent(STOPPED, playerStatus.song);
             notifyStatusChange(playerStatus);
         }
     }
@@ -222,7 +226,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
         return currentSongNameProvider.getCurrentTitle();
     }
 
-    public PlayerStatus getPlayerStatus() {
+    public PlayerStatusChangeEvent getPlayerStatus() {
         return playerStatus;
     }
 
@@ -235,10 +239,10 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
     }
 
     @Override
-    public void onStatusChange(PlayerStatus playerStatus) {
+    public void onStatusChange(PlayerStatusChangeEvent playerStatus) {
     }
 
-    private void notifyStatusChange(PlayerStatus playerStatus) {
+    private void notifyStatusChange(PlayerStatusChangeEvent playerStatus) {
         for (MediaPlayerListener listener : listenerList) {
             listener.onStatusChange(playerStatus);
         }
@@ -255,6 +259,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
 
     @Override
     public void onTitleChange(String title) {
-        notifyStatusChange(playerStatus); // simply to update the UI, probably a more specific update would make sense.
+        currentSong = title;
+        if (playerStatus.playerStatus == PLAYING) {
+            notifyStatusChange(new PlayerStatusChangeEvent(playerStatus.playerStatus, title));
+        }
     }
 }

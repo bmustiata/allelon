@@ -1,25 +1,35 @@
 package com.ciplogic.allelon.player;
 
 public enum AvailableStream {
-    CONTEMPORAN("http://allelon.at:8000/stream/1/",
-            "Contemporan",
+    ALLELON("http://allelon.at:8000/stream/1/",
+            "Allelon",
             "http://allelon.at:8000/currentsong?sid=1",
             "http://allelon.at:8000/played.html?sid=1"),
 
-    CLASSIC("http://allelon.at:8000/stream/2/",
-            "Classic",
+    ALLELON_RO("http://allelon.at:8000/stream/2/",
+            "Allelon Ro",
             "http://allelon.at:8000/currentsong?sid=2",
             "http://allelon.at:8000/played.html?sid=2"),
 
-    CONTEMPORAN_AAC("http://allelon.at:8000/stream/3/",
-            "Contemporan AAC",
+    ALLELON_CLASSIC("http://allelon.at:8000/stream/2/",
+            "Allelon Classic",
             "http://allelon.at:8000/currentsong?sid=3",
             "http://allelon.at:8000/played.html?sid=3"),
 
-    CLASSIC_AAC("http://allelon.at:8000/stream/4/",
-            "Classic AAC",
+    ALLELON_AAC("http://allelon.at:8000/stream/4/",
+            "Allelon AAC",
             "http://allelon.at:8000/currentsong?sid=4",
-            "http://allelon.at:8000/played.html?sid=4");
+            "http://allelon.at:8000/played.html?sid=4"),
+
+    ALLELON_RO_AAC("http://allelon.at:8000/stream/5/",
+            "Allelon Ro AAC",
+            "http://allelon.at:8000/currentsong?sid=5",
+            "http://allelon.at:8000/played.html?sid=5"),
+
+    ALLELON_CLASSIC_AAC("http://allelon.at:8000/stream/6/",
+            "Allelon Classic AAC",
+            "http://allelon.at:8000/currentsong?sid=6",
+            "http://allelon.at:8000/played.html?sid=6");
 
 
     private final String url;

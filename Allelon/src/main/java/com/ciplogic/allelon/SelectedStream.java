@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SelectedStream {
-    private static AvailableStream selectedStream = AvailableStream.CONTEMPORAN;
+    private static AvailableStream selectedStream = AvailableStream.ALLELON;
     private static Set<StreamChangedListener> streamChangedListeners = new HashSet<StreamChangedListener>();
 
     public static AvailableStream getSelectedStream() {

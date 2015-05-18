@@ -1,7 +1,6 @@
 package com.ciplogic.allelon;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -34,8 +33,9 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     private TextView statusTextView;
     private TextView currentSongTextView;
 
-    private RadioButton contemporanRadioButton;
-    private RadioButton classicRadioButton;
+    private RadioButton allelonRadioButton;
+    private RadioButton allelonClassicRadioButton;
+    private RadioButton allelonRoRadioButton;
 
     private RadioGroup availableStreamsRadioGroup;
 
@@ -66,15 +66,20 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.contemporanRadioButton:
+                    case R.id.allelonRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.CONTEMPORAN_AAC :
-                                AvailableStream.CONTEMPORAN);
+                                AvailableStream.ALLELON_AAC :
+                                AvailableStream.ALLELON);
                         break;
-                    case R.id.classicRadioButton:
+                    case R.id.allelonRoRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.CLASSIC_AAC :
-                                AvailableStream.CLASSIC);
+                                AvailableStream.ALLELON_RO_AAC :
+                                AvailableStream.ALLELON_RO);
+                        break;
+                    case R.id.allelonClassicRadioButton:
+                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
+                                AvailableStream.ALLELON_CLASSIC_AAC :
+                                AvailableStream.ALLELON_CLASSIC);
                         break;
                 }
             }
@@ -138,8 +143,11 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     private void findUiComponents() {
         availableStreamsRadioGroup = (RadioGroup) findViewById(R.id.availableStreams);
-        contemporanRadioButton = (RadioButton) findViewById(R.id.contemporanRadioButton);
-        classicRadioButton = (RadioButton) findViewById(R.id.classicRadioButton);
+
+        allelonRadioButton = (RadioButton) findViewById(R.id.allelonRadioButton);
+        allelonRoRadioButton = (RadioButton) findViewById(R.id.allelonRoRadioButton);
+        allelonClassicRadioButton = (RadioButton) findViewById(R.id.allelonClassicRadioButton);
+
         listenButton = (Button) findViewById(R.id.listenButton);
         stopPlayButton = (Button) findViewById(R.id.stopPlayButton);
         closeApplicationButton = (ImageButton) findViewById(R.id.closeApplicationButton);
@@ -157,10 +165,11 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     private void updateControlsStatus() {
         if (allelonMediaPlayer.isPlaying()) {
-            if (findIndexOfPlayingStream() % 2 == 0) { // contemporan selected
-                contemporanRadioButton.toggle();
-            } else { // classical selected
-                classicRadioButton.toggle();
+            int indexOfPlayingStream = findIndexOfPlayingStream();
+            switch (indexOfPlayingStream % 3) {
+                case 0: allelonRadioButton.toggle(); break;
+                case 1: allelonRoRadioButton.toggle(); break;
+                case 2: allelonClassicRadioButton.toggle(); break;
             }
         }
 

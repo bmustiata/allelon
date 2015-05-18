@@ -140,15 +140,21 @@
                         <RadioButton
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:text="Contemporan"
-                            android:id="@+id/contemporanRadioButton"
+                            android:text="Allelon"
+                            android:id="@+id/allelonRadioButton"
                             android:checked="true" />
 
                         <RadioButton
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:text="Classic"
-                            android:id="@+id/classicRadioButton" />
+                            android:text="Allelon Ro"
+                            android:id="@+id/allelonRoRadioButton" />
+
+                        <RadioButton
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Allelon Classic"
+                            android:id="@+id/allelonClassicRadioButton" />
                 </RadioGroup>
             </RelativeLayout>
 

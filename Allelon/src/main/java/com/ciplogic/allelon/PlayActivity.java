@@ -25,8 +25,6 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     private SeekBar volumeSeekBar;
 
-    private boolean firstCallPassed = false;
-
     public static PlayActivity INSTANCE;
 
     private PlayerStatusChangeEvent playerStatus = allelonMediaPlayer.getPlayerStatus();
@@ -66,19 +64,20 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
+                    // always use the MP3 stream, until figuring out what is wrong with AAC.
                     case R.id.allelonRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.ALLELON_AAC :
+                                AvailableStream.ALLELON :
                                 AvailableStream.ALLELON);
                         break;
                     case R.id.allelonRoRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.ALLELON_RO_AAC :
+                                AvailableStream.ALLELON_RO :
                                 AvailableStream.ALLELON_RO);
                         break;
                     case R.id.allelonClassicRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.ALLELON_CLASSIC_AAC :
+                                AvailableStream.ALLELON_CLASSIC :
                                 AvailableStream.ALLELON_CLASSIC);
                         break;
                 }
@@ -134,11 +133,9 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
         // FIXME: the very first call actually restarts the stream in some scenarios.
         // probably a better solution related to the Activity lifecycle would be in place.
-        if (firstCallPassed && allelonMediaPlayer.isPlaying()) {
+        if (allelonMediaPlayer.isPlaying()) {
             allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
         }
-
-        firstCallPassed = true;
     }
 
     private void findUiComponents() {

@@ -8,6 +8,10 @@ import android.media.MediaPlayer;
 public class VolumeMediaPlayer extends MediaPlayer {
     private int volume = 100; // volume is from 0, to 100.
 
+    public VolumeMediaPlayer(int volume) {
+        setVolume(volume);
+    }
+
     public int getVolume() {
         return volume;
     }

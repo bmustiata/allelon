@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
+import com.ciplogic.allelon.eventbus.ObjectInstantiator;
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
 public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
@@ -13,6 +14,7 @@ public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        ObjectInstantiator.ensureInstantiated(context);
         ThreadMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(context);
 
         TelephonyManager telephony = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);

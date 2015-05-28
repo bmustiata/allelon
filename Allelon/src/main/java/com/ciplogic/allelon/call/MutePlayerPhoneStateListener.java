@@ -6,6 +6,9 @@ import android.util.Log;
 
 import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
+/**
+ * FIXME: move this to the event bus.
+ */
 public class MutePlayerPhoneStateListener extends PhoneStateListener {
     private final ThreadMediaPlayer allelonMediaPlayer;
 
@@ -32,13 +35,13 @@ public class MutePlayerPhoneStateListener extends PhoneStateListener {
     private void mutePlayer() {
         if (!muted) {
             muted = true;
-            oldVolume = allelonMediaPlayer.getVolume();
-            allelonMediaPlayer.setVolume(0);
+            //oldVolume = allelonMediaPlayer.getVolume();
+            //allelonMediaPlayer.setVolume(0);
         }
     }
 
     private void restorePlayerVolume() {
-        allelonMediaPlayer.setVolume(oldVolume);
+        //allelonMediaPlayer.setVolume(oldVolume);
         muted = false;
     }
 }

@@ -11,14 +11,26 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.ciplogic.allelon.eventbus.Event;
+import com.ciplogic.allelon.eventbus.EventBus;
+import com.ciplogic.allelon.eventbus.EventListener;
+import com.ciplogic.allelon.eventbus.ObjectInstantiator;
+import com.ciplogic.allelon.eventbus.events.uiactions.ChangeVolumeEvent;
+import com.ciplogic.allelon.eventbus.events.MediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.MediaPlayerTitleEvent;
+import com.ciplogic.allelon.eventbus.events.RequestMediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.SelectStreamEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.StartPlayEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.StopPlayEvent;
+import com.ciplogic.allelon.eventbus.events.UnknownMediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.UnknownMediaPlayerTitleEvent;
 import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AvailableStream;
-import com.ciplogic.allelon.player.MediaPlayerListener;
-import com.ciplogic.allelon.service.ThreadMediaPlayer;
 
-public class PlayActivity extends Activity implements MediaPlayerListener {
-    private ThreadMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(this);
+import java.util.ArrayList;
+import java.util.List;
 
+public class PlayActivity extends Activity implements EventListener {
     private Button listenButton;
     private Button stopPlayButton;
     private ImageButton closeApplicationButton;
@@ -27,7 +39,6 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
 
     public static PlayActivity INSTANCE;
 
-    private PlayerStatusChangeEvent playerStatus = allelonMediaPlayer.getPlayerStatus();
     private TextView statusTextView;
     private TextView currentSongTextView;
 
@@ -41,6 +52,8 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ObjectInstantiator.ensureInstantiated(this);
+
         INSTANCE = this;
 
         setContentView(R.layout.play_activity);
@@ -48,15 +61,18 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         findUiComponents();
 
         addEventListeners();
-        updateControlsStatus();
 
-        allelonMediaPlayer.addPlayerListener(this);
+        updateControlsStatus(new UnknownMediaPlayerStatusEvent());
+        updatePlayedTitleStatus(new UnknownMediaPlayerTitleEvent());
+
+        EventBus.INSTANCE.registerListener(this);
+        EventBus.INSTANCE.fire(new RequestMediaPlayerStatusEvent());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        allelonMediaPlayer.removePlayerListener(this);
+        EventBus.INSTANCE.unregisterListener(this);
     }
 
     private void addEventListeners() {
@@ -87,7 +103,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                allelonMediaPlayer.setVolume(i);
+                EventBus.INSTANCE.fire(new ChangeVolumeEvent(i));
             }
 
             @Override
@@ -102,16 +118,14 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
-                updateControlsStatus();
+                EventBus.INSTANCE.fire(new StartPlayEvent());
             }
         });
 
         stopPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                allelonMediaPlayer.stopPlay();
-                updateControlsStatus();
+                EventBus.INSTANCE.fire(new StopPlayEvent());
             }
         });
 
@@ -129,13 +143,7 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
      * @param selectedStream
      */
     private void selectStream(AvailableStream selectedStream) {
-        SelectedStream.setSelectedStream(selectedStream);
-
-        // FIXME: the very first call actually restarts the stream in some scenarios.
-        // probably a better solution related to the Activity lifecycle would be in place.
-        if (allelonMediaPlayer.isPlaying()) {
-            allelonMediaPlayer.startPlay(SelectedStream.getSelectedStream().getUrl());
-        }
+        EventBus.INSTANCE.fire(new SelectStreamEvent(selectedStream));
     }
 
     private void findUiComponents() {
@@ -157,38 +165,17 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     protected void onResume() {
         super.onResume();
 
-        updateControlsStatus();
+        updateControlsStatus(new UnknownMediaPlayerStatusEvent());
+        updatePlayedTitleStatus(new UnknownMediaPlayerTitleEvent());
+
+        EventBus.INSTANCE.fire(new RequestMediaPlayerStatusEvent());
     }
 
-    private void updateControlsStatus() {
-        if (allelonMediaPlayer.isPlaying()) {
-            int indexOfPlayingStream = findIndexOfPlayingStream();
-            switch (indexOfPlayingStream % 3) {
-                case 0: allelonRadioButton.toggle(); break;
-                case 1: allelonRoRadioButton.toggle(); break;
-                case 2: allelonClassicRadioButton.toggle(); break;
-            }
-        }
-
-        listenButton.setVisibility( allelonMediaPlayer.isPlaying() ? View.INVISIBLE : View.VISIBLE );
-        stopPlayButton.setVisibility(allelonMediaPlayer.isPlaying() ? View.VISIBLE : View.INVISIBLE);
-        volumeSeekBar.setProgress( allelonMediaPlayer.getVolume() );
-
-        switch (playerStatus.playerStatus) {
-            case STOPPED: statusTextView.setText("Stopped"); break;
-            case BUFFERING: statusTextView.setText("Buffering"); break;
-            case PLAYING: statusTextView.setText("Playing"); break;
-        }
-
-        currentSongTextView.setText( allelonMediaPlayer.getCurrentTitle() );
-    }
-
-    private int findIndexOfPlayingStream() {
+    private int findIndexOfPlayingStream(AvailableStream playedStream) {
         int index = 0;
-        String url = allelonMediaPlayer.getPlayedUrl();
 
         for (AvailableStream stream : AvailableStream.values()) {
-            if (stream.getUrl().equals(url)) {
+            if (stream == playedStream) {
                 return index;
             }
 
@@ -205,33 +192,56 @@ public class PlayActivity extends Activity implements MediaPlayerListener {
     }
 
     @Override
-    public void onStatusChange(PlayerStatusChangeEvent playerStatus) {
-        this.playerStatus = playerStatus;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateControlsStatus();
-            }
-        });
+    public void onEvent(final Event event) {
+        if (event instanceof MediaPlayerStatusEvent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateControlsStatus((MediaPlayerStatusEvent) event);
+                }
+            });
+        } else if (event instanceof MediaPlayerTitleEvent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updatePlayedTitleStatus((MediaPlayerTitleEvent) event);
+                }
+            });
+        }
     }
 
     @Override
-    public void onStartStreaming() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateControlsStatus();
-            }
-        });
+    public List<Class<? extends Event>> getListenedEvents() {
+        List<Class<? extends Event>> result = new ArrayList<Class<? extends Event>>();
+
+        result.add(MediaPlayerStatusEvent.class);
+        result.add(MediaPlayerTitleEvent.class);
+
+        return result;
     }
 
-    @Override
-    public void onStopStreaming() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateControlsStatus();
+    private void updateControlsStatus(MediaPlayerStatusEvent mediaPlayerStatus) {
+        if (mediaPlayerStatus.playing) {
+            int indexOfPlayingStream = findIndexOfPlayingStream(mediaPlayerStatus.playedStream);
+            switch (indexOfPlayingStream % 3) {
+                case 0: allelonRadioButton.toggle(); break;
+                case 1: allelonRoRadioButton.toggle(); break;
+                case 2: allelonClassicRadioButton.toggle(); break;
             }
-        });
+        }
+
+        listenButton.setVisibility( mediaPlayerStatus.playing ? View.INVISIBLE : View.VISIBLE );
+        stopPlayButton.setVisibility(mediaPlayerStatus.playing ? View.VISIBLE : View.INVISIBLE);
+        volumeSeekBar.setProgress(mediaPlayerStatus.volume);
+
+        switch (mediaPlayerStatus.playerStatus) {
+            case STOPPED: statusTextView.setText("Stopped"); break;
+            case BUFFERING: statusTextView.setText("Buffering"); break;
+            case PLAYING: statusTextView.setText("Playing"); break;
+        }
+    }
+
+    private void updatePlayedTitleStatus(MediaPlayerTitleEvent mediaPlayerTitleEvent) {
+        currentSongTextView.setText(mediaPlayerTitleEvent.title);
     }
 }

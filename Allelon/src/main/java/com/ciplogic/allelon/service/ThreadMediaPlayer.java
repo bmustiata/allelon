@@ -6,39 +6,41 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
 
-import com.ciplogic.allelon.MediaPlayerNotificationListener;
 import com.ciplogic.allelon.PlayActivity;
-import com.ciplogic.allelon.player.MediaPlayerListener;
+import com.ciplogic.allelon.eventbus.Event;
+import com.ciplogic.allelon.eventbus.EventBus;
+import com.ciplogic.allelon.eventbus.EventListener;
+import com.ciplogic.allelon.eventbus.events.uiactions.ChangeVolumeEvent;
+import com.ciplogic.allelon.eventbus.events.MediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.RequestMediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.SelectStreamEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.StartPlayEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.StopPlayEvent;
+import com.ciplogic.allelon.player.AvailableStream;
 import com.ciplogic.allelon.player.VolumeMediaPlayer;
-import com.ciplogic.allelon.songname.CurrentSongNameChangeListener;
-import com.ciplogic.allelon.songname.CurrentSongNameProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.BUFFERING;
-import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.PLAYING;
-import static com.ciplogic.allelon.player.MediaPlayerListener.PlayerStatus.STOPPED;
-
-public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameChangeListener {
+/**
+ * Plays the music
+ */
+public class ThreadMediaPlayer implements EventListener {
     private static ThreadMediaPlayer INSTANCE;
+
+    // media players can't have their URL changed without being restarted.
+    private VolumeMediaPlayer mediaPlayer;
+    private int volume = 100;
+
+    private AvailableStream selectedStream = AvailableStream.values()[0];
 
     private volatile boolean playingThread = false;
     private volatile String url;
 
-    private List<MediaPlayerListener> listenerList = new ArrayList<MediaPlayerListener>();
-
-    private PlayerStatusChangeEvent playerStatus = new PlayerStatusChangeEvent(STOPPED);
-    private String lastSong = "";
-    private String currentSong = "";
-
-    private CurrentSongNameProvider currentSongNameProvider = new CurrentSongNameProvider();
-
-    private int volume = 100;
+    private MediaPlayerStatusEvent.PlayerStatus playerStatus = MediaPlayerStatusEvent.PlayerStatus.STOPPED;
 
     private ThreadMediaPlayer() {
-        this.addPlayerListener(new MediaPlayerNotificationListener());
-        currentSongNameProvider.setCurrentSongNameChangeListener(this);
+        EventBus.INSTANCE.registerListener(this);
     }
 
     public static ThreadMediaPlayer getInstance(Context context) {
@@ -65,11 +67,9 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
             shutdownPlayer(true);
         }
 
+        this.playingThread = true; // we mark the thread as playing, since we're going to start it anyway
+        this.url = url;
 
-        playingThread = true; // we mark the thread as playing, since we're going to start it anyway
-        setUrl(url);
-
-        notifyStartPlaying();
         changeStateToBuffering();
         notifyAll();
 
@@ -78,36 +78,21 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
         PlayActivity.INSTANCE.startService(service);
     }
 
-    private void setUrl(String url) {
-        this.url = url;
-        currentSongNameProvider.setUrl(url);
-    }
-
     private boolean isAlreadyPlayingUrl(String url) {
-        return url.equals(this.url);
-    }
-
-    private void notifyStartPlaying() {
-        for (MediaPlayerListener listener : listenerList) {
-            listener.onStartStreaming();
-        }
+        return isPlaying() && url.equals(this.url);
     }
 
     public void stopPlay() {
         shutdownPlayer(true);
     }
 
-    private void shutdownPlayer(boolean shouldWait) {
+    private synchronized void shutdownPlayer(boolean shouldWait) {
         if (url != null) { // if is already stopping, avoid deadlock via notify from observers.
-            synchronized (this) {
-                if(url != null) {
-                    setUrl(null);
-                    notifyAll();
-                }
+            url = null;
+            notifyAll();
 
-                if (shouldWait) {
-                    waitRunningThreadToShutdown();
-                }
+            if (shouldWait) {
+                waitRunningThreadToShutdown();
             }
         }
     }
@@ -129,7 +114,7 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
         Log.d("Allelon", "Playing stream via intent: " + givenUrl);
 
         if (this.url == null) { // we were started from the intent directly, there is no activity running.
-            setUrl(givenUrl);
+            this.url = givenUrl;
             this.playingThread = true;
         }
 
@@ -138,13 +123,10 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
             int currentSecond, lastPlayedSecond = -1;
 
             synchronized (this) {
-                VolumeMediaPlayer mediaPlayer = null;
-
                 try {
-                    mediaPlayer = new VolumeMediaPlayer();
+                    mediaPlayer = new VolumeMediaPlayer(volume);
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     mediaPlayer.setDataSource(url);
-                    mediaPlayer.setVolume(volume);
                     mediaPlayer.prepare();
                     mediaPlayer.start();
 
@@ -155,8 +137,6 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
                         try {
                             wait(200);
                             count++;
-
-                            mediaPlayer.setVolume(volume); // FIXME
 
                             if (count % 3 == 0) {
                                 currentSecond = mediaPlayer.getCurrentPosition();
@@ -179,89 +159,83 @@ public class ThreadMediaPlayer implements MediaPlayerListener, CurrentSongNameCh
                 playingThread = false;
                 notifyAll();
             }
-            notifyStopPlaying();
         } catch (Exception e) {
             Log.e("Allelon", e.getMessage(), e);
         }
     }
 
-    // FIXME: This contraption with || !song.equals(lastSong), and assigning the lastSong is
-    // since the update of the title happens sometimes while BUFFERING, so we need to
     private void changeStateToPlaying() {
-        if (playerStatus.playerStatus != PLAYING || !playerStatus.song.equals(currentSong)) {
-            playerStatus = new PlayerStatusChangeEvent(PLAYING, currentSong);
-            notifyStatusChange(playerStatus);
+        if (playerStatus != MediaPlayerStatusEvent.PlayerStatus.PLAYING) {
+            playerStatus = MediaPlayerStatusEvent.PlayerStatus.PLAYING;
+            notifyPlayerStatus(playerStatus);
         }
     }
 
     private void changeStateToBuffering() {
-        if (playerStatus.playerStatus != BUFFERING) {
-            playerStatus = new PlayerStatusChangeEvent(BUFFERING, playerStatus.song);
-            notifyStatusChange(playerStatus);
+        if (playerStatus != MediaPlayerStatusEvent.PlayerStatus.BUFFERING) {
+            playerStatus = MediaPlayerStatusEvent.PlayerStatus.BUFFERING;
+            notifyPlayerStatus(playerStatus);
         }
     }
 
     private void changeStateToStopped() {
-        if (playerStatus.playerStatus != STOPPED) {
-            playerStatus = new PlayerStatusChangeEvent(STOPPED, playerStatus.song);
-            notifyStatusChange(playerStatus);
+        if (playerStatus != MediaPlayerStatusEvent.PlayerStatus.STOPPED) {
+            playerStatus = MediaPlayerStatusEvent.PlayerStatus.STOPPED;
+            notifyPlayerStatus(playerStatus);
         }
     }
 
-    private void notifyStopPlaying() {
-        for (MediaPlayerListener listener : listenerList) {
-            listener.onStopStreaming();
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof ChangeVolumeEvent) {
+            ChangeVolumeEvent changeVolumeEvent = (ChangeVolumeEvent) event;
+            this.setVolume(changeVolumeEvent.value);
+        } else if (event instanceof RequestMediaPlayerStatusEvent) {
+            notifyPlayerStatus(playerStatus);
+        } else if (event instanceof StartPlayEvent) {
+            startPlay(selectedStream.getUrl());
+        } else if (event instanceof StopPlayEvent) {
+            stopPlay();
+        } else if (event instanceof SelectStreamEvent) {
+            SelectStreamEvent selectStreamEvent = (SelectStreamEvent) event;
+            selectedStream = selectStreamEvent.availableStream;
+            if (isPlaying()) {
+                startPlay(selectedStream.getUrl());
+            }
         }
     }
 
-    public synchronized void addPlayerListener(MediaPlayerListener listener) {
-        listenerList.add(listener);
+    @Override
+    public List<Class<? extends Event>> getListenedEvents() {
+        List<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>();
+
+        events.add(ChangeVolumeEvent.class);
+        events.add(RequestMediaPlayerStatusEvent.class);
+        events.add(StartPlayEvent.class);
+        events.add(StopPlayEvent.class);
+        events.add(SelectStreamEvent.class);
+
+        return events;
     }
 
-    public synchronized void removePlayerListener(MediaPlayerListener listener) {
-        listenerList.remove(listener);
-    }
+    private void notifyPlayerStatus(MediaPlayerStatusEvent.PlayerStatus playerStatus) {
+        MediaPlayerStatusEvent event = new MediaPlayerStatusEvent();
 
-    public String getCurrentTitle() {
-        return currentSongNameProvider.getCurrentTitle();
-    }
+        event.playerStatus = playerStatus;
+        event.playing = playingThread;
+        event.volume = volume;
+        if (url != null) {
+            event.playedStream = AvailableStream.fromUrl(url);
+        }
 
-    public PlayerStatusChangeEvent getPlayerStatus() {
-        return playerStatus;
+        EventBus.INSTANCE.fire(event);
     }
 
     public void setVolume(int volume) {
         this.volume = volume;
-    }
 
-    public int getVolume() {
-        return volume;
-    }
-
-    @Override
-    public void onStatusChange(PlayerStatusChangeEvent playerStatus) {
-    }
-
-    private void notifyStatusChange(PlayerStatusChangeEvent playerStatus) {
-        for (MediaPlayerListener listener : listenerList) {
-            listener.onStatusChange(playerStatus);
-        }
-    }
-
-    @Override
-    public void onStartStreaming() {
-    }
-
-    @Override
-    public void onStopStreaming() {
-        shutdownPlayer(false);
-    }
-
-    @Override
-    public void onTitleChange(String title) {
-        currentSong = title;
-        if (playerStatus.playerStatus == PLAYING) {
-            notifyStatusChange(new PlayerStatusChangeEvent(playerStatus.playerStatus, title));
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(volume);
         }
     }
 }

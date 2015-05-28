@@ -1,10 +1,11 @@
 package com.ciplogic.allelon.service;
 
-import android.media.MediaPlayer;
+import android.telephony.TelephonyManager;
 
 import com.ciplogic.allelon.eventbus.Event;
 import com.ciplogic.allelon.eventbus.EventBus;
 import com.ciplogic.allelon.eventbus.EventListener;
+import com.ciplogic.allelon.eventbus.events.PhoneCallStatusEvent;
 import com.ciplogic.allelon.eventbus.events.uiactions.ChangeVolumeEvent;
 import com.ciplogic.allelon.eventbus.events.uiactions.SelectStreamEvent;
 import com.ciplogic.allelon.eventbus.events.uiactions.StartPlayEvent;
@@ -16,9 +17,10 @@ import java.util.List;
 
 /**
  * This simply listens the event bus, and creates or destroys the media player on demand.
+ * It fires events on the bus with the current player state of the component.
  */
 public class MediaPlayerComponent implements EventListener {
-    PlayerState playerState = PlayerState.STOPPED;
+    private PlayerState playerState = PlayerState.STOPPED;
 
     // media players can't have their URL changed without being restarted.
     private MediaPlayerHolder mediaPlayerHolder;
@@ -34,15 +36,31 @@ public class MediaPlayerComponent implements EventListener {
     @Override
     public void onEvent(Event event) {
         if (event instanceof StartPlayEvent) {
-            System.out.println("[start]");
             handleStartPlayEvent((StartPlayEvent) event);
         } else if (event instanceof StopPlayEvent) {
             handleStopPlayEvent();
         } else if (event instanceof SelectStreamEvent) {
-            System.out.println("[change]");
             handleSelectStreamEvent((SelectStreamEvent) event);
         } else if (event instanceof ChangeVolumeEvent) {
             handleChangeVolumeEvent((ChangeVolumeEvent) event);
+        } else if (event instanceof PhoneCallStatusEvent) {
+            handlePhoneCallEvent((PhoneCallStatusEvent)event);
+        }
+    }
+
+    private void handlePhoneCallEvent(PhoneCallStatusEvent event) {
+        if (playerState != PlayerState.PREPARING && playerState != PlayerState.PLAYING) {
+            return;
+        }
+
+        switch(event.callState) {
+            case TelephonyManager.CALL_STATE_RINGING:
+            case TelephonyManager.CALL_STATE_OFFHOOK:
+                mediaPlayerHolder.setVolume(0);
+                break;
+            case TelephonyManager.CALL_STATE_IDLE:
+                mediaPlayerHolder.setVolume(volume);
+                break;
         }
     }
 
@@ -79,7 +97,6 @@ public class MediaPlayerComponent implements EventListener {
     }
 
     private void shutDownMediaPlayer(MediaPlayerHolder mediaPlayer) {
-        System.out.println("shutdown media player: " + mediaPlayer);
         this.mediaPlayerHolder = null;
         mediaPlayer.stop();
     }
@@ -114,6 +131,8 @@ public class MediaPlayerComponent implements EventListener {
         result.add(ChangeVolumeEvent.class);
         result.add(SelectStreamEvent.class);
 
+        result.add(PhoneCallStatusEvent.class);
+
         return result;
     }
 
@@ -132,7 +151,6 @@ public class MediaPlayerComponent implements EventListener {
     }
 
     private void changeState(PlayerState playerState) {
-        System.out.println("Old state: " + this.playerState + " new: " + playerState);
         this.playerState = playerState;
     }
 }

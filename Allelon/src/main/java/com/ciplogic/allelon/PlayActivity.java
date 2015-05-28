@@ -15,15 +15,15 @@ import com.ciplogic.allelon.eventbus.Event;
 import com.ciplogic.allelon.eventbus.EventBus;
 import com.ciplogic.allelon.eventbus.EventListener;
 import com.ciplogic.allelon.eventbus.ObjectInstantiator;
-import com.ciplogic.allelon.eventbus.events.uiactions.ChangeVolumeEvent;
 import com.ciplogic.allelon.eventbus.events.MediaPlayerStatusEvent;
 import com.ciplogic.allelon.eventbus.events.MediaPlayerTitleEvent;
 import com.ciplogic.allelon.eventbus.events.RequestMediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.UnknownMediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.UnknownMediaPlayerTitleEvent;
+import com.ciplogic.allelon.eventbus.events.uiactions.ChangeVolumeEvent;
 import com.ciplogic.allelon.eventbus.events.uiactions.SelectStreamEvent;
 import com.ciplogic.allelon.eventbus.events.uiactions.StartPlayEvent;
 import com.ciplogic.allelon.eventbus.events.uiactions.StopPlayEvent;
-import com.ciplogic.allelon.eventbus.events.UnknownMediaPlayerStatusEvent;
-import com.ciplogic.allelon.eventbus.events.UnknownMediaPlayerTitleEvent;
 import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AvailableStream;
 
@@ -118,6 +118,8 @@ public class PlayActivity extends Activity implements EventListener {
         listenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                listenButton.setEnabled(false);
+                stopPlayButton.setEnabled(false);
                 EventBus.INSTANCE.fire(new StartPlayEvent());
             }
         });
@@ -125,6 +127,8 @@ public class PlayActivity extends Activity implements EventListener {
         stopPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                listenButton.setEnabled(false);
+                stopPlayButton.setEnabled(false);
                 EventBus.INSTANCE.fire(new StopPlayEvent());
             }
         });
@@ -232,6 +236,10 @@ public class PlayActivity extends Activity implements EventListener {
 
         listenButton.setVisibility( mediaPlayerStatus.playing ? View.INVISIBLE : View.VISIBLE );
         stopPlayButton.setVisibility(mediaPlayerStatus.playing ? View.VISIBLE : View.INVISIBLE);
+
+        listenButton.setEnabled(true);
+        stopPlayButton.setEnabled(true);
+
         volumeSeekBar.setProgress(mediaPlayerStatus.volume);
 
         switch (mediaPlayerStatus.playerStatus) {

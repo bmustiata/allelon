@@ -7,6 +7,11 @@ import com.ciplogic.allelon.player.VolumeMediaPlayer;
 
 import java.io.IOException;
 
+/**
+ * This exists because in the Android code exists a race condition, where
+ * <code>onPrepared()</code> will be called even if <code>stop()</code> was
+ * already called on the media player.
+ */
 public class MediaPlayerHolder implements MediaPlayer.OnPreparedListener {
     private VolumeMediaPlayer mediaPlayer;
     private MediaPlayerComponent mediaPlayerComponent;
@@ -17,7 +22,6 @@ public class MediaPlayerHolder implements MediaPlayer.OnPreparedListener {
     public MediaPlayerHolder(MediaPlayerComponent mediaPlayerComponent, int volume) {
         this.mediaPlayerComponent = mediaPlayerComponent;
 
-        System.out.println("new holder: " + this);
         mediaPlayer = new VolumeMediaPlayer(volume);
 
         mediaPlayer.setOnPreparedListener(this);
@@ -26,11 +30,9 @@ public class MediaPlayerHolder implements MediaPlayer.OnPreparedListener {
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        System.out.println("prepared: " + this);
         synchronized (this) {
             if (isDestroyed) {
                 releaseMediaPlayer();
-                System.out.println("prepared destroyed: " + this);
 
                 return;
             }
@@ -38,7 +40,6 @@ public class MediaPlayerHolder implements MediaPlayer.OnPreparedListener {
             isPreparing = false;
         }
 
-        System.out.println("calling on prepared on component " + this);
         mediaPlayerComponent.onPrepared(this);
     }
 
@@ -57,7 +58,6 @@ public class MediaPlayerHolder implements MediaPlayer.OnPreparedListener {
     }
 
     public void prepareAsync() {
-        System.out.println("prepare async " + this);
         mediaPlayer.prepareAsync();
     }
 
@@ -66,11 +66,9 @@ public class MediaPlayerHolder implements MediaPlayer.OnPreparedListener {
     }
 
     public void stop() {
-        System.out.println("stopping: " + this);
         synchronized (this) {
             isDestroyed = true;
         }
-        System.out.println("stop: " + this);
 
         if (isPreparing) {
             return;

@@ -6,28 +6,22 @@ import android.content.Intent;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
+import com.ciplogic.allelon.eventbus.EventBus;
 import com.ciplogic.allelon.eventbus.ObjectInstantiator;
-import com.ciplogic.allelon.service.ThreadMediaPlayer;
+import com.ciplogic.allelon.eventbus.events.PhoneCallStatusEvent;
 
 public class PhoneCallBroadcastReceiver extends BroadcastReceiver {
-    private static MutePlayerPhoneStateListener mutePlayerPhoneStateListener;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         ObjectInstantiator.ensureInstantiated(context);
-        ThreadMediaPlayer allelonMediaPlayer = ThreadMediaPlayer.getInstance(context);
 
         TelephonyManager telephony = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-        MutePlayerPhoneStateListener customPhoneListener = getMutePlayerPhoneStateListener(allelonMediaPlayer);
 
-        telephony.listen(customPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-
-    private MutePlayerPhoneStateListener getMutePlayerPhoneStateListener(ThreadMediaPlayer allelonMediaPlayer) {
-        if (mutePlayerPhoneStateListener == null) {
-            mutePlayerPhoneStateListener = new MutePlayerPhoneStateListener(allelonMediaPlayer);
-        }
-
-        return mutePlayerPhoneStateListener;
+        telephony.listen(new PhoneStateListener() {
+            @Override
+            public void onCallStateChanged(int state, String incomingNumber) {
+                EventBus.INSTANCE.fire(new PhoneCallStatusEvent(state));
+            }
+        }, PhoneStateListener.LISTEN_CALL_STATE);
     }
 }

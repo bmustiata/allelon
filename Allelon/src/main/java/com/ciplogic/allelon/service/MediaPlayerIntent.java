@@ -10,6 +10,10 @@ import com.ciplogic.allelon.eventbus.events.uiactions.StartPlayEvent;
 import com.ciplogic.allelon.notification.StreamNotification;
 import com.ciplogic.allelon.player.AvailableStream;
 
+/**
+ * Starts the player via an intent, to consume fewer resources instead
+ * of the full resources for the UI.
+ */
 public class MediaPlayerIntent extends IntentService {
     public MediaPlayerIntent() {
         super("service.MediaPlayerIntent");

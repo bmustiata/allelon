@@ -11,7 +11,7 @@ public enum AvailableStream {
             "http://allelon.at:8000/currentsong?sid=2",
             "http://allelon.at:8000/played.html?sid=2"),
 
-    ALLELON_CLASSIC("http://allelon.at:8000/stream/2/",
+    ALLELON_CLASSIC("http://allelon.at:8000/stream/3/",
             "Allelon Classic",
             "http://allelon.at:8000/currentsong?sid=3",
             "http://allelon.at:8000/played.html?sid=3"),

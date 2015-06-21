@@ -1,22 +1,51 @@
 package com.ciplogic.allelon.songname;
 
-import com.ciplogic.allelon.player.AvailableStream;
+import com.ciplogic.allelon.eventbus.Event;
+import com.ciplogic.allelon.eventbus.EventBus;
+import com.ciplogic.allelon.eventbus.EventListener;
+import com.ciplogic.allelon.eventbus.events.MediaPlayerStatusEvent;
+import com.ciplogic.allelon.eventbus.events.MediaPlayerTitleEvent;
 
-public class CurrentSongNameProvider {
-    private CurrentSongNameChangeListener currentSongNameChangeListener;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Listens for media player status events and runs on a parallel thread the fetching of the
+ * current song title every 15 seconds.
+ */
+public class CurrentSongNameProvider implements EventListener {
     private volatile String currentTitle;
     private CurrentSongFetcherThread currentSongFetcherThread;
 
-    public void setUrl(String url) {
-        currentTitle = url == null? "" : "..."; // when the URL changes, we need to reload the title.
+    public CurrentSongNameProvider() {
+        EventBus.INSTANCE.registerListener(this);
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        MediaPlayerStatusEvent mediaPlayerStatus = (MediaPlayerStatusEvent) event;
+
+        if (!mediaPlayerStatus.playing) {
+            setUrl(null);
+        } else {
+            setUrl(mediaPlayerStatus.playedStream.getTitleUrl());
+        }
+    }
+
+    @Override
+    public List<Class<? extends Event>> getListenedEvents() {
+        return (List) Collections.singletonList(MediaPlayerStatusEvent.class);
+    }
+
+    public void setUrl(String titleUrl) {
+        currentTitle = titleUrl == null? "" : "..."; // when the URL changes, we need to reload the title.
 
         if (currentSongFetcherThread != null) {
             currentSongFetcherThread.stop();
             currentSongFetcherThread = null;
         }
 
-        if (url != null) {
-            String titleUrl = AvailableStream.fromUrl(url).getTitleUrl();
+        if (titleUrl != null) {
             currentSongFetcherThread = new CurrentSongFetcherThread(this, titleUrl);
         }
     }
@@ -25,22 +54,12 @@ public class CurrentSongNameProvider {
         return currentTitle;
     }
 
-    public CurrentSongNameChangeListener getCurrentSongNameChangeListener() {
-        return currentSongNameChangeListener;
-    }
-
-    public void setCurrentSongNameChangeListener(CurrentSongNameChangeListener currentSongNameChangeListener) {
-        this.currentSongNameChangeListener = currentSongNameChangeListener;
-    }
-
     public void setFetchedTitle(String title) {
         String oldTitle = currentTitle;
         currentTitle = title;
 
         if (!areStringsEquals(oldTitle, currentTitle)) {
-            if (currentSongNameChangeListener != null) {
-                currentSongNameChangeListener.onTitleChange(currentTitle);
-            }
+            EventBus.INSTANCE.fire(new MediaPlayerTitleEvent(currentTitle));
         }
     }
 

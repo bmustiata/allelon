@@ -3,6 +3,7 @@ package com.ciplogic.allelon.eventbus;
 import android.content.Context;
 
 import com.ciplogic.allelon.service.MediaPlayerComponent;
+import com.ciplogic.allelon.songname.CurrentSongNameProvider;
 
 /**
  * Ensures that the required objects are created and registered
@@ -10,6 +11,7 @@ import com.ciplogic.allelon.service.MediaPlayerComponent;
  */
 public class ObjectInstantiator {
     private static MediaPlayerComponent mediaPlayerComponent;
+    private static CurrentSongNameProvider currentSongNameProvider;
 
     public static void ensureInstantiated(Context context) {
         if (mediaPlayerComponent != null) {
@@ -17,5 +19,6 @@ public class ObjectInstantiator {
         }
 
         mediaPlayerComponent = new MediaPlayerComponent();
+        currentSongNameProvider = new CurrentSongNameProvider();
     }
 }

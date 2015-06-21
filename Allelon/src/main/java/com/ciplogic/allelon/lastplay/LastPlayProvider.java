@@ -20,7 +20,7 @@ public class LastPlayProvider {
 
     // <td>05:22:29</td><td>agape - FECIOARA<t
     private Pattern LAST_PLAYED_PATTERN = Pattern.compile("<td>(\\d\\d:\\d\\d:\\d\\d)</td><td>(.*?)<");
-    private Pattern AUTHOR_TITLE_PATTERN = Pattern.compile("^(.*?)-(.*)$");
+    private Pattern AUTHOR_TITLE_PATTERN = Pattern.compile("^\\s*(.*?)\\s*-\\s*(.*)\\s*$");
 
     public LastPlayProvider() {
         markSongListLoading();

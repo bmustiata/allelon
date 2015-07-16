@@ -60,10 +60,10 @@ public class PlayActivity extends Activity implements EventListener {
 
         findUiComponents();
 
-        addEventListeners();
-
         updateControlsStatus(new UnknownMediaPlayerStatusEvent());
         updatePlayedTitleStatus(new UnknownMediaPlayerTitleEvent());
+
+        addEventListeners();
 
         EventBus.INSTANCE.registerListener(this);
         EventBus.INSTANCE.fire(new RequestMediaPlayerStatusEvent());
@@ -72,6 +72,7 @@ public class PlayActivity extends Activity implements EventListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        removeListeners();
         EventBus.INSTANCE.unregisterListener(this);
     }
 
@@ -143,6 +144,21 @@ public class PlayActivity extends Activity implements EventListener {
     }
 
     /**
+     * Remove the listeners for all the UI Components. This should
+     * be invoked when the activity is destroyed, so if the onCreate
+     * is called again, (due to for example view changes), the events
+     * that just set controls don't trigger the listeners that are
+     * supposed to be fired only on user interaction.
+     */
+    private void removeListeners() {
+        availableStreamsRadioGroup.setOnCheckedChangeListener(null);
+        volumeSeekBar.setOnSeekBarChangeListener(null);
+        listenButton.setOnClickListener(null);
+        stopPlayButton.setOnClickListener(null);
+        closeApplicationButton.setOnClickListener(null);
+    }
+
+    /**
      * Selects the given selected stream, and starts playing it.
      * @param selectedStream
      */
@@ -168,9 +184,6 @@ public class PlayActivity extends Activity implements EventListener {
     @Override
     protected void onResume() {
         super.onResume();
-
-        updateControlsStatus(new UnknownMediaPlayerStatusEvent());
-        updatePlayedTitleStatus(new UnknownMediaPlayerTitleEvent());
 
         EventBus.INSTANCE.fire(new RequestMediaPlayerStatusEvent());
     }

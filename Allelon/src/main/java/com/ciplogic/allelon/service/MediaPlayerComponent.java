@@ -5,6 +5,7 @@ import android.telephony.TelephonyManager;
 import com.ciplogic.allelon.eventbus.Event;
 import com.ciplogic.allelon.eventbus.EventBus;
 import com.ciplogic.allelon.eventbus.EventListener;
+import com.ciplogic.allelon.eventbus.events.MediaPlayerComponentStatusEvent;
 import com.ciplogic.allelon.eventbus.events.MediaPlayerStatusEvent;
 import com.ciplogic.allelon.eventbus.events.PhoneCallStatusEvent;
 import com.ciplogic.allelon.eventbus.events.RequestMediaPlayerStatusEvent;
@@ -177,6 +178,7 @@ public class MediaPlayerComponent implements EventListener {
     }
 
     private void changeState(PlayerState playerState) {
+        EventBus.INSTANCE.fire(new MediaPlayerComponentStatusEvent(playerState));
         this.playerState = playerState;
     }
 }

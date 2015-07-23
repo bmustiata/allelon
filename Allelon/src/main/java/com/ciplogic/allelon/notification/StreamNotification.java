@@ -8,41 +8,42 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
 import com.ciplogic.allelon.AllelonActivity;
-import com.ciplogic.allelon.PlayActivity;
 import com.ciplogic.allelon.R;
 
-// FIXME: this shouldn't depend on the PlayActivity probably.
 public class StreamNotification {
-    public StreamNotification() {
+    private final Context context;
+
+    public StreamNotification(Context context) {
+        this.context = context;
     }
 
     public void showNotification(String text) {
-        if (PlayActivity.INSTANCE == null) {
+        if (context == null) {
             return; // FIXME: I should probably get the intent context at this stage.
         }
 
         Notification playingNotification = buildNotification(text);
 
         NotificationManager notificationManager =
-                (NotificationManager) PlayActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, playingNotification);
     }
 
     public Notification buildNotification(String text) {
-        if (PlayActivity.INSTANCE == null) {
+        if (context == null) {
             return null; // FIXME: I should probably get the intent context at this stage.
         }
 
-        Intent resultIntent = new Intent(PlayActivity.INSTANCE, AllelonActivity.class);
+        Intent resultIntent = new Intent(context, AllelonActivity.class);
         PendingIntent playerActivity =
                 PendingIntent.getActivity(
-                        PlayActivity.INSTANCE,
+                        context,
                         0,
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        return new NotificationCompat.Builder(PlayActivity.INSTANCE)
+        return new NotificationCompat.Builder(context)
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setSmallIcon(R.drawable.ic_launcher)
@@ -53,14 +54,12 @@ public class StreamNotification {
     }
 
     public void hideNotification() {
-        if (PlayActivity.INSTANCE == null) {
+        if (context == null) {
             return; // FIXME: I should probably get the intent context at this stage.
         }
 
         NotificationManager notificationManager =
-                (NotificationManager) PlayActivity.INSTANCE.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
     }
-
-
 }

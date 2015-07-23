@@ -137,7 +137,7 @@ public class PlayActivity extends Activity implements EventListener {
         closeApplicationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new StreamNotification().hideNotification();
+                new StreamNotification(PlayActivity.this).hideNotification();
                 System.exit(0);
             }
         });

@@ -23,7 +23,7 @@ public class MediaPlayerIntent extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            startForeground(0, new StreamNotification().buildNotification("Starting service..."));
+            startForeground(0, new StreamNotification(this).buildNotification("Starting service..."));
             String streamUrl = intent.getDataString();
 
             EventBus.INSTANCE.fire(new SelectStreamEvent(AvailableStream.fromUrl(streamUrl)));
@@ -36,7 +36,7 @@ public class MediaPlayerIntent extends IntentService {
     @Override
     public void onDestroy() {
         // make sure the notification also goes down, if Android nukes our process.
-        new StreamNotification().hideNotification();
+        new StreamNotification(this).hideNotification();
         super.onDestroy();
     }
 }

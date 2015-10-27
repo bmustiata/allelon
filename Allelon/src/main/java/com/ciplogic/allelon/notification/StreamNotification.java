@@ -46,7 +46,7 @@ public class StreamNotification {
         return new NotificationCompat.Builder(context)
                 .setOngoing(true)
                 .setAutoCancel(false)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_launcher_transparent)
                 .setContentTitle("Allelon")
                 .setContentText(text)
                 .setContentIntent(playerActivity)

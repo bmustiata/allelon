@@ -1,8 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'Google Inc.:Google APIs:19'
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 'Google Inc.:Google APIs:23'
+    buildToolsVersion "21.1.2"
+
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 16
@@ -23,5 +26,5 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:19.0.0'
+    compile 'com.android.support:appcompat-v7:23.0.0'
 }

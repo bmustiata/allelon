@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.ciplogic.allelon.SelectedStream;
 import com.ciplogic.allelon.remote.HttpPoll;
-import com.ciplogic.allelon.remote.HttpPollCallback;
+import com.ciplogic.allelon.remote.HttpResponseCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +38,9 @@ public class LastPlayProvider {
             httpPoll.stop();
         }
 
-        httpPoll = new HttpPoll(SelectedStream.getSelectedStream().getHistoryUrl(), 60000, new HttpPollCallback() {
+        httpPoll = new HttpPoll(SelectedStream.getSelectedStream().getHistoryUrl(), 60000, new HttpResponseCallback() {
             @Override
-            public void run(String content) {
+            public void onResult(String content) {
                 if (content == null) {
                     Log.w("Allelon", "Unable to read URL.");
                     return;
@@ -57,6 +57,13 @@ public class LastPlayProvider {
                     markSongListLoading();
                     httpPoll.stop();
                 }
+            }
+
+            @Override
+            public void onReject(Throwable e) {
+                // nothing on purpose. we could show a notification that fetching the
+                // play history failed, but it's not super useful for the user esp for
+                // rare events when that would happen.
             }
         });
     }

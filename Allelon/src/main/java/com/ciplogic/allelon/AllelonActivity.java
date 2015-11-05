@@ -22,9 +22,9 @@ public class AllelonActivity extends TabActivity {
     private void setTabs()
     {
         addTab("Radio", R.drawable.tab_play, PlayActivity.class);
+        addTab("News", R.drawable.tab_chat, NewsActivity.class);
         addTab("History", R.drawable.tab_history, LastPlayedActivity.class);
         addTab("Contact", R.drawable.tab_contact, ContactActivity.class);
-        //addTab("Chat", R.drawable.tab_chat, ChatActivity.class);
     }
 
     private void addTab(String labelId, int drawableId, Class<?> c)

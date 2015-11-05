@@ -64,7 +64,7 @@ public class NewsProvider implements EventListener {
 
     private void populateDataFromNewsFeedXml(String content) {
         try {
-            System.out.println("xml: " + content);
+            content = content.replaceAll("&#8230;", "..."); // FIXME: xml entities
 
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -107,11 +107,11 @@ public class NewsProvider implements EventListener {
                     currentItem.date = xpp.getText();
                 }
 
-                if (eventType == XmlPullParser.START_TAG && "creator".equals(xpp.getName()) && "http://purl.org/dc/elements/1.1/".equals(xpp.getNamespace())) {
+                if (eventType == XmlPullParser.TEXT && "creator".equals(currentNode.name) && "http://purl.org/dc/elements/1.1/".equals(currentNode.namespace)) {
                     currentItem.author = xpp.getText();
                 }
 
-                if (eventType == XmlPullParser.START_TAG && "comments".equals(xpp.getName()) && "http://purl.org/rss/1.0/modules/slash/".equals(xpp.getNamespace())) {
+                if (eventType == XmlPullParser.TEXT && "comments".equals(currentNode.name) && "http://purl.org/rss/1.0/modules/slash/".equals(currentNode.namespace)) {
                     currentItem.commentCount = xpp.getText();
                 }
 

@@ -1,6 +1,8 @@
 package com.ciplogic.allelon.news;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -44,7 +46,7 @@ public class NewsDataAdapter extends BaseAdapter implements EventListener {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        NewsVo newsItem = data.get(position);
+        final NewsVo newsItem = data.get(position);
         View result = activity.getLayoutInflater().inflate(R.layout.news_entry, null);
 
         ((TextView) result.findViewById(R.id.info_title)).setText(newsItem.title);
@@ -54,7 +56,10 @@ public class NewsDataAdapter extends BaseAdapter implements EventListener {
         ((Button) result.findViewById(R.id.info_read_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("yay");
+                String url = newsItem.url;
+                Intent openUrl = new Intent(Intent.ACTION_VIEW);
+                openUrl.setData(Uri.parse(url));
+                activity.startActivity(openUrl);
             }
         });
 

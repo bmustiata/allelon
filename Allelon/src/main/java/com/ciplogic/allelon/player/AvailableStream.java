@@ -29,8 +29,12 @@ public enum AvailableStream {
     ALLELON_CLASSIC_AAC("http://allelon.at:8000/stream/6/",
             "Allelon Classic AAC",
             "http://allelon.at:8000/currentsong?sid=6",
-            "http://allelon.at:8000/played.html?sid=6");
+            "http://allelon.at:8000/played.html?sid=6"),
 
+    ALLELON_ARABIC("http://allelon.at:8000/stream/8/",
+            "Allelon Arabic",
+            "http://allelon.at:8000/currentsong?sid=8",
+            "http://allelon.at:8000/played.html?sid=8");
 
     private final String url;
     private final String label;

@@ -15,6 +15,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Fetch the news from the remote Allelon server. Allows reading them as messages.
@@ -26,6 +28,8 @@ public class NewsProvider implements EventListener {
 
     public static final String URL= "http://allelon.at/feed/";
     public static final String URL_DATA_FAILED= "http://allelon.at/feed/#failure";
+
+    private static Pattern HTML_ENTITY_PATTERN = Pattern.compile("&#(\\d+);");
 
     private List<NewsVo> data;
 
@@ -64,8 +68,6 @@ public class NewsProvider implements EventListener {
 
     private void populateDataFromNewsFeedXml(String content) {
         try {
-            content = content.replaceAll("&#8230;", "..."); // FIXME: xml entities
-
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser xpp = factory.newPullParser();
@@ -92,27 +94,27 @@ public class NewsProvider implements EventListener {
                 }
 
                 if (eventType == XmlPullParser.TEXT && "title".equals(currentNode.name) && "".equals(currentNode.namespace)) {
-                    currentItem.title = xpp.getText();
+                    currentItem.title = resolveXmlEntities(xpp.getText());
                 }
 
                 if (eventType == XmlPullParser.TEXT && "description".equals(currentNode.name) && "".equals(currentNode.namespace)) {
-                    currentItem.description = xpp.getText();
+                    currentItem.description = resolveXmlEntities(xpp.getText());
                 }
 
                 if (eventType == XmlPullParser.TEXT && "link".equals(currentNode.name) && "".equals(currentNode.namespace)) {
-                    currentItem.url = xpp.getText();
+                    currentItem.url = resolveXmlEntities(xpp.getText());
                 }
 
                 if (eventType == XmlPullParser.TEXT && "pubDate".equals(currentNode.name) && "".equals(currentNode.namespace)) {
-                    currentItem.date = xpp.getText();
+                    currentItem.date = resolveXmlEntities(xpp.getText());
                 }
 
                 if (eventType == XmlPullParser.TEXT && "creator".equals(currentNode.name) && "http://purl.org/dc/elements/1.1/".equals(currentNode.namespace)) {
-                    currentItem.author = xpp.getText();
+                    currentItem.author = resolveXmlEntities(xpp.getText());
                 }
 
                 if (eventType == XmlPullParser.TEXT && "comments".equals(currentNode.name) && "http://purl.org/rss/1.0/modules/slash/".equals(currentNode.namespace)) {
-                    currentItem.commentCount = xpp.getText();
+                    currentItem.commentCount = resolveXmlEntities(xpp.getText());
                 }
 
                 if (eventType == XmlPullParser.END_TAG && "item".equals(xpp.getName()) && "".equals(xpp.getNamespace())) {
@@ -127,6 +129,31 @@ public class NewsProvider implements EventListener {
         } catch (Exception e) {
             throw new IllegalArgumentException("Unable to parse news feed: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Since the XML parser from Android doesn't resolves the entities, we need to do that
+     * manually. We will just iterate over all the entities &#\d+; and replace them with
+     * the Unicode character the entity is pointing at.
+     *
+     * @param content
+     * @return
+     */
+    private String resolveXmlEntities(String content) {
+        StringBuilder result = new StringBuilder("");
+
+        int currentIndex = 0;
+
+        Matcher matcher = HTML_ENTITY_PATTERN.matcher(content);
+        while (matcher.find()) {
+            result.append(content.substring(currentIndex, matcher.start()))
+                .append((char) Integer.parseInt(matcher.group(1)));
+            currentIndex = matcher.end();
+        }
+
+        result.append(content.substring(currentIndex, content.length()));
+
+        return result.toString();
     }
 
     private void populateFailureReadingNewsData(Throwable e) {

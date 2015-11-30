@@ -1,19 +1,19 @@
 package com.ciplogic.allelon.player;
 
 public enum AvailableStream {
-    ALLELON("http://allelon.at:8000/stream/1/",
+    ALLELON("http://allelon.at:8000/stream.mp3",
             "Allelon",
-            "http://allelon.at:8000/currentsong?sid=1",
+            "http://allelon.at/icecast/now-playing.php?mount=/stream.mp3",
             "http://allelon.at:8000/played.html?sid=1"),
 
-    ALLELON_RO("http://allelon.at:8000/stream/2/",
+    ALLELON_RO("http://allelon.at:8000/ro.mp3",
             "Allelon Ro",
-            "http://allelon.at:8000/currentsong?sid=2",
+            "http://allelon.at/icecast/now-playing.php?mount=/ro.mp3",
             "http://allelon.at:8000/played.html?sid=2"),
 
-    ALLELON_CLASSIC("http://allelon.at:8000/stream/3/",
+    ALLELON_CLASSIC("http://allelon.at:8000/classic.mp3",
             "Allelon Classic",
-            "http://allelon.at:8000/currentsong?sid=3",
+            "http://allelon.at/icecast/now-playing.php?mount=/classic.mp3",
             "http://allelon.at:8000/played.html?sid=3"),
 
     ALLELON_AAC("http://allelon.at:8000/stream/4/",
@@ -31,9 +31,9 @@ public enum AvailableStream {
             "http://allelon.at:8000/currentsong?sid=6",
             "http://allelon.at:8000/played.html?sid=6"),
 
-    ALLELON_ARABIC("http://allelon.at:8000/stream/8/",
+    ALLELON_ARABIC("http://allelon.at:8000/arab.mp3",
             "Allelon Arabic",
-            "http://allelon.at:8000/currentsong?sid=8",
+            "http://allelon.at/icecast/now-playing.php?mount=/arab.mp3",
             "http://allelon.at:8000/played.html?sid=8");
 
     private final String url;

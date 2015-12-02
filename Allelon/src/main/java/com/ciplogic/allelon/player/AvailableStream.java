@@ -1,14 +1,24 @@
 package com.ciplogic.allelon.player;
 
+/**
+ * The available streams for the application.
+ *
+ * In case the streams change make sure to update:
+ *
+ * 0. This file, of course, lol :)
+ * 1. PlayActivity.java, including the (mod 4) or whatever number is in there.
+ * 2. land/play_activity.xml, layout/play_activity.xml
+ *
+ */
 public enum AvailableStream {
-    ALLELON("http://allelon.at:8000/stream.mp3",
-            "Allelon",
-            "http://allelon.at/icecast/now-playing.php?mount=/stream.mp3",
-            "http://allelon.at:8000/played.html?sid=1"),
-
     ALLELON_RO("http://allelon.at:8000/ro.mp3",
             "Allelon Ro",
             "http://allelon.at/icecast/now-playing.php?mount=/ro.mp3",
+            "http://allelon.at:8000/played.html?sid=1"),
+
+    ALLELON_LIFE("http://allelon.at:8000/life.mp3",
+            "Allelon LIFE",
+            "http://allelon.at/icecast/now-playing.php?mount=/life.mp3",
             "http://allelon.at:8000/played.html?sid=2"),
 
     ALLELON_CLASSIC("http://allelon.at:8000/classic.mp3",
@@ -16,34 +26,36 @@ public enum AvailableStream {
             "http://allelon.at/icecast/now-playing.php?mount=/classic.mp3",
             "http://allelon.at:8000/played.html?sid=3"),
 
-    ALLELON_AAC("http://allelon.at:8000/stream/4/",
-            "Allelon AAC",
-            "http://allelon.at:8000/currentsong?sid=4",
-            "http://allelon.at:8000/played.html?sid=4"),
-
-    ALLELON_RO_AAC("http://allelon.at:8000/stream/5/",
-            "Allelon Ro AAC",
-            "http://allelon.at:8000/currentsong?sid=5",
-            "http://allelon.at:8000/played.html?sid=5"),
-
-    ALLELON_CLASSIC_AAC("http://allelon.at:8000/stream/6/",
-            "Allelon Classic AAC",
-            "http://allelon.at:8000/currentsong?sid=6",
-            "http://allelon.at:8000/played.html?sid=6"),
-
     ALLELON_ARABIC("http://allelon.at:8000/arab.mp3",
-            "Allelon Arabic",
+            "Allelon Arab",
             "http://allelon.at/icecast/now-playing.php?mount=/arab.mp3",
-            "http://allelon.at:8000/played.html?sid=8");
+            "http://allelon.at:8000/played.html?sid=8"),
+
+    ALLELON_RO_AAC("http://allelon.at:8000/ro.mp3",
+            "Allelon Ro",
+            "http://allelon.at/icecast/now-playing.php?mount=/ro.mp3",
+            "http://allelon.at:8000/played.html?sid=1"),
+
+
+    ALLELON_LIFE_AAC("http://allelon.at:8000/life_32k.aac",
+                     "Allelon LIFE",
+                     "http://allelon.at/icecast/now-playing.php?mount=/life.mp3",
+                     "http://allelon.at:8000/played.html?sid=2"),
+    ;
 
     private final String url;
-    private final String label;
     private final String titleUrl;
     private final String historyUrl;
 
+    /**
+     * The available stream. While the label is not used, is kept so we know what goes where.
+     * @param url
+     * @param label
+     * @param titleUrl
+     * @param historyUrl
+     */
     AvailableStream(String url, String label, String titleUrl, String historyUrl) {
         this.url = url;
-        this.label = label;
         this.titleUrl = titleUrl;
         this.historyUrl = historyUrl;
     }
@@ -58,16 +70,6 @@ public enum AvailableStream {
 
     public String getHistoryUrl() {
         return historyUrl;
-    }
-
-    public static AvailableStream fromLabel(String label) {
-        for (AvailableStream availableStream : AvailableStream.values()) {
-            if (availableStream.label.equals(label)) {
-                return availableStream;
-            }
-        }
-
-        return null;
     }
 
     public static AvailableStream fromUrl(String url) {

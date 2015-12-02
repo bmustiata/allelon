@@ -62,21 +62,27 @@
         <RadioButton
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Allelon"
-            android:id="@+id/allelonRadioButton"
+            android:text="Allelon Ro"
+            android:id="@+id/allelonRoRadioButton"
             android:checked="true" />
 
         <RadioButton
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Allelon Ro"
-            android:id="@+id/allelonRoRadioButton" />
+            android:text="Allelon LIFE"
+            android:id="@+id/allelonLifeRadioButton" />
 
         <RadioButton
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Allelon Classic"
             android:id="@+id/allelonClassicRadioButton" />
+
+        <RadioButton
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Allelon Arab"
+            android:id="@+id/allelonArabRadioButton" />
     </RadioGroup>
 
     <TextView

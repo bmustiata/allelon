@@ -42,9 +42,10 @@ public class PlayActivity extends Activity implements EventListener {
     private TextView statusTextView;
     private TextView currentSongTextView;
 
-    private RadioButton allelonRadioButton;
-    private RadioButton allelonClassicRadioButton;
     private RadioButton allelonRoRadioButton;
+    private RadioButton allelonLifeRadioButton;
+    private RadioButton allelonClassicRadioButton;
+    private RadioButton allelonArabRadioButton;
 
     private RadioGroup availableStreamsRadioGroup;
 
@@ -82,20 +83,25 @@ public class PlayActivity extends Activity implements EventListener {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     // always use the MP3 stream, until figuring out what is wrong with AAC.
-                    case R.id.allelonRadioButton:
-                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.ALLELON :
-                                AvailableStream.ALLELON);
-                        break;
                     case R.id.allelonRoRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
                                 AvailableStream.ALLELON_RO :
                                 AvailableStream.ALLELON_RO);
                         break;
+                    case R.id.allelonLifeRadioButton:
+                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
+                                AvailableStream.ALLELON_LIFE :
+                                AvailableStream.ALLELON_LIFE);
+                        break;
                     case R.id.allelonClassicRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
                                 AvailableStream.ALLELON_CLASSIC :
                                 AvailableStream.ALLELON_CLASSIC);
+                        break;
+                    case R.id.allelonArabRadioButton:
+                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
+                                AvailableStream.ALLELON_ARABIC :
+                                AvailableStream.ALLELON_ARABIC);
                         break;
                 }
             }
@@ -169,9 +175,10 @@ public class PlayActivity extends Activity implements EventListener {
     private void findUiComponents() {
         availableStreamsRadioGroup = (RadioGroup) findViewById(R.id.availableStreams);
 
-        allelonRadioButton = (RadioButton) findViewById(R.id.allelonRadioButton);
         allelonRoRadioButton = (RadioButton) findViewById(R.id.allelonRoRadioButton);
+        allelonLifeRadioButton = (RadioButton) findViewById(R.id.allelonLifeRadioButton);
         allelonClassicRadioButton = (RadioButton) findViewById(R.id.allelonClassicRadioButton);
+        allelonArabRadioButton = (RadioButton) findViewById(R.id.allelonArabRadioButton);
 
         listenButton = (Button) findViewById(R.id.listenButton);
         stopPlayButton = (Button) findViewById(R.id.stopPlayButton);
@@ -240,10 +247,11 @@ public class PlayActivity extends Activity implements EventListener {
     private void updateControlsStatus(MediaPlayerStatusEvent mediaPlayerStatus) {
         if (mediaPlayerStatus.playing) {
             int indexOfPlayingStream = findIndexOfPlayingStream(mediaPlayerStatus.playedStream);
-            switch (indexOfPlayingStream % 3) {
-                case 0: allelonRadioButton.toggle(); break;
-                case 1: allelonRoRadioButton.toggle(); break;
+            switch (indexOfPlayingStream % 4) {
+                case 0: allelonRoRadioButton.toggle(); break;
+                case 1: allelonLifeRadioButton.toggle(); break;
                 case 2: allelonClassicRadioButton.toggle(); break;
+                case 3: allelonArabRadioButton.toggle(); break;
             }
         }
 

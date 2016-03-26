@@ -38,7 +38,7 @@ public class CurrentSongNameProvider implements EventListener {
     }
 
     public void setUrl(String titleUrl) {
-        currentTitle = titleUrl == null? "" : "..."; // when the URL changes, we need to reload the title.
+        currentTitle = titleUrl == null? "" : " "; // when the URL changes, we need to reload the title.
 
         if (currentSongFetcherThread != null) {
             currentSongFetcherThread.stop();

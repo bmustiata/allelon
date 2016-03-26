@@ -93,7 +93,7 @@
                 android:scrollHorizontally="true"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:text="..."
+                android:text=" "
                 android:id="@+id/currentSong"
                 android:layout_above="@+id/relativeLayout"
                 android:layout_alignParentLeft="true" />
@@ -140,27 +140,27 @@
                     <RadioButton
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Allelon Ro"
-                        android:id="@+id/allelonRoRadioButton"
+                        android:text="Allelon"
+                        android:id="@+id/allelonRadioButton"
                         android:checked="true" />
 
                     <RadioButton
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Allelon LIFE"
-                        android:id="@+id/allelonLifeRadioButton" />
-
-                    <RadioButton
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Allelon Classic"
-                        android:id="@+id/allelonClassicRadioButton" />
+                        android:text="Allelon Ro"
+                        android:id="@+id/allelonRoRadioButton" />
 
                     <RadioButton
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="Allelon Arab"
                         android:id="@+id/allelonArabRadioButton" />
+
+                    <RadioButton
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Allelon Turk (Shema)"
+                        android:id="@+id/allelonTurkRadioButton" />
                 </RadioGroup>
             </RelativeLayout>
 

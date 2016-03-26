@@ -11,36 +11,25 @@ package com.ciplogic.allelon.player;
  *
  */
 public enum AvailableStream {
-    ALLELON_RO("http://allelon.at:8000/ro.mp3",
-            "Allelon Ro",
-            "http://allelon.at/icecast/now-playing.php?mount=/ro.mp3",
+    ALLELON("http://radio.allelon.at/allelonat.mp3",
+            "Allelon",
+            "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Fradio.allelon.at%2Fallelonat.mp3",
             "http://allelon.at:8000/played.html?sid=1"),
 
-    ALLELON_LIFE("http://allelon.at:8000/life.mp3",
-            "Allelon LIFE",
-            "http://allelon.at/icecast/now-playing.php?mount=/life.mp3",
+    ALLELON_RO("http://ro.radio.allelon.at/roallelonat.mp3",
+            "Allelon Ro",
+            "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Fro.radio.allelon.at%2Froallelonat.mp3",
             "http://allelon.at:8000/played.html?sid=2"),
 
-    ALLELON_CLASSIC("http://allelon.at:8000/classic.mp3",
-            "Allelon Classic",
-            "http://allelon.at/icecast/now-playing.php?mount=/classic.mp3",
+    ALLELON_ARAB("http://arab.radio.allelon.at/araballelonat.mp3",
+            "Allelon Arab",
+            "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Farab.radio.allelon.at%2Faraballelonat.mp3",
             "http://allelon.at:8000/played.html?sid=3"),
 
-    ALLELON_ARABIC("http://allelon.at:8000/arab.mp3",
-            "Allelon Arab",
-            "http://allelon.at/icecast/now-playing.php?mount=/arab.mp3",
-            "http://allelon.at:8000/played.html?sid=8"),
-
-    ALLELON_RO_AAC("http://allelon.at:8000/ro.mp3",
-            "Allelon Ro",
-            "http://allelon.at/icecast/now-playing.php?mount=/ro.mp3",
-            "http://allelon.at:8000/played.html?sid=1"),
-
-
-    ALLELON_LIFE_AAC("http://allelon.at:8000/life_32k.aac",
-                     "Allelon LIFE",
-                     "http://allelon.at/icecast/now-playing.php?mount=/life.mp3",
-                     "http://allelon.at:8000/played.html?sid=2"),
+    ALLELON_TURK("http://shema.radio.allelon.at/shemaallelonat.mp3",
+            "Allelon Turk (Shema)",
+            "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Fshema.radio.allelon.at%2Fshemaallelonat.mp3",
+            "http://allelon.at:8000/played.html?sid=8")
     ;
 
     private final String url;

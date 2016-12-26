@@ -1,0 +1,29 @@
+FROM ubuntu:16.04
+MAINTAINER Bogdan Mustiata <bogdan.mustiata@gmail.com>
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update -y && \
+    apt-get install -y software-properties-common curl unzip zip && \
+    add-apt-repository -y ppa:webupd8team/java && \
+    apt-get update -y && \
+    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
+    apt-get install -y oracle-java8-installer && \
+    apt-get clean -y
+
+RUN curl -s "https://get.sdkman.io" | bash && \
+    bash -l -c "sdk install gradle 2.2"
+
+RUN curl -o android_tools.zip https://dl.google.com/android/repository/tools_r25.2.3-linux.zip && \
+    mkdir /android && \
+    cd /android && \
+    unzip /android_tools.zip && \
+    rm /android_tools.zip
+
+RUN bash -c "echo -e 'y\n'" | /android/tools/android update sdk -t platform-tools,android-23,addon-google_apis-google-23,build-tools-25.0.2,extra-android-m2repository --no-ui && \
+    /android/platform-tools/adb kill-server
+
+VOLUME /project
+
+CMD /project/bin/build-script.sh
+

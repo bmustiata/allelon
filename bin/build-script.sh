@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 echo "Running as $UID:$GID"
 
 #
@@ -15,7 +17,7 @@ if [[ $MAKE_RELEASE != "" ]]; then
     echo "MAKE RELEASE"
 
     cd /project/Allelon/build/outputs/apk
-    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore /project/keystore.jks Allelon-release-unsigned.apk "allelon radio"
+    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore /project/keystore.jks -storepass "allelon" -keypass "allelon" Allelon-release-unsigned.apk "allelon radio"
 
     rm Allelon-release-aligned.apk
 

@@ -40,5 +40,5 @@ RUN bash -c "echo -e 'y\n'" | /android/tools/android update sdk -t platform-tool
 #======================================
 VOLUME /project
 
-CMD /project/bin/build-script.sh
+CMD bash -l /project/bin/build-script.sh
 

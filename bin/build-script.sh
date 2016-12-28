@@ -19,7 +19,7 @@ if [[ $MAKE_RELEASE != "" ]]; then
     cd /project/Allelon/build/outputs/apk
     jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore /project/keystore.jks -storepass "allelon" -keypass "allelon" Allelon-release-unsigned.apk "allelon radio"
 
-    rm Allelon-release-aligned.apk
+    rm -f Allelon-release-aligned.apk
 
     /android/build-tools/25.0.2/zipalign 4 Allelon-release-unsigned.apk Allelon-release-aligned.apk
 

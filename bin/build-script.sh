@@ -8,7 +8,7 @@ echo "Running as $UID:$GID"
 # Run the actual build.
 #
 cd /project
-gradle build
+gradle clean build
 
 #
 # If make release is active, run the signing of the binary.

@@ -12,6 +12,7 @@ docker run -it \
     -e UID=$(id -u) \
     -e GID=$(id -g) \
     -e MAKE_RELEASE=$MAKE_RELEASE \
+    --link nexus:nexus \
     -v $FOLDER:/project \
     bmst/android-build
 

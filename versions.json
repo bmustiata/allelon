@@ -1,4 +1,16 @@
 {
+  "version": {
+    "version": "3.4.0",
+    "files": {
+      "Allelon/src/main/AndroidManifest.xml": "android:versionName=\"##VERSION##\" >"
+    }
+  },
+  "versionCode": {
+    "version": "34",
+    "files": {
+      "Allelon/src/main/AndroidManifest.xml": "android:versionCode=\"##VERSION##\""
+    }
+  },
   "android-tools": {
     "version": "25.2.3",
     "files": {

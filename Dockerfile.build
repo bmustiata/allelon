@@ -1,6 +1,9 @@
 FROM ubuntu:16.04
 MAINTAINER Bogdan Mustiata <bogdan.mustiata@gmail.com>
 
+#======================================
+# Install JAVA 8
+#======================================
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
     apt-get install -y software-properties-common curl unzip zip && \
@@ -11,19 +14,31 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y oracle-java8-installer && \
     apt-get clean -y
 
+#======================================
+# Install SDKMAN + gradle
+#======================================
 RUN curl -s "https://get.sdkman.io" | bash && \
     bash -l -c "sdk install gradle 2.2"
 
+#======================================
+# Download the android tools
+#======================================
 RUN curl -o android_tools.zip https://dl.google.com/android/repository/tools_r25.2.3-linux.zip && \
     mkdir /android && \
     cd /android && \
     unzip /android_tools.zip && \
     rm /android_tools.zip
 
+#======================================
+# Fetch the android platform, build tools, etc.
+#======================================
 RUN bash -c "echo -e 'y\n'" | /android/tools/android update sdk -t platform-tools,android-23,addon-google_apis-google-23,build-tools-25.0.2,extra-android-m2repository --no-ui && \
     /android/platform-tools/adb kill-server
 
+#======================================
+# Actually run the build.
+#======================================
 VOLUME /project
 
-CMD bash -l /project/bin/build-script.sh
+CMD /project/bin/build-script.sh
 

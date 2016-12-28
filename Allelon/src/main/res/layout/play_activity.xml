@@ -153,12 +153,6 @@
                     <RadioButton
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:text="Allelon Arab"
-                        android:id="@+id/allelonArabRadioButton" />
-
-                    <RadioButton
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
                         android:text="Allelon Turk (Shema)"
                         android:id="@+id/allelonTurkRadioButton" />
                 </RadioGroup>

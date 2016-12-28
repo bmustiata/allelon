@@ -21,11 +21,6 @@ public enum AvailableStream {
             "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Fro.radio.allelon.at%2Froallelonat.mp3",
             "http://allelon.at:8000/played.html?sid=2"),
 
-    ALLELON_ARAB("http://arab.radio.allelon.at/araballelonat.mp3",
-            "Allelon Arab",
-            "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Farab.radio.allelon.at%2Faraballelonat.mp3",
-            "http://allelon.at:8000/played.html?sid=3"),
-
     ALLELON_TURK("http://shema.radio.allelon.at/shemaallelonat.mp3",
             "Allelon Turk (Shema)",
             "http://embed.bisericilive.com/audiocurrentstats?src=http%3A%2F%2Fshema.radio.allelon.at%2Fshemaallelonat.mp3",

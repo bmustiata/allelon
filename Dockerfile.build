@@ -18,7 +18,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 # Install SDKMAN + gradle
 #======================================
 RUN curl -s "https://get.sdkman.io" | bash && \
-    bash -l -c "sdk install gradle 2.2"
+    bash -l -c "sdk install gradle 2.14.1"
 
 #======================================
 # Download the android tools

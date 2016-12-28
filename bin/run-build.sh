@@ -7,6 +7,8 @@ if [[ "$1" == "-r" ]]; then
     MAKE_RELEASE=1
 fi # [[ "$1" == "-r" ]]
 
+docker build -t bmst/android-build -f $FOLDER/Dockerfile.build .
+
 docker run -it \
     --rm \
     -e UID=$(id -u) \

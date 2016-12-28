@@ -44,7 +44,6 @@ public class PlayActivity extends Activity implements EventListener {
 
     private RadioButton allelonRadioButton;
     private RadioButton allelonRoRadioButton;
-    private RadioButton allelonArabRadioButton;
     private RadioButton allelonTurkRadioButton;
 
     private RadioGroup availableStreamsRadioGroup;
@@ -92,11 +91,6 @@ public class PlayActivity extends Activity implements EventListener {
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
                                 AvailableStream.ALLELON_RO :
                                 AvailableStream.ALLELON_RO);
-                        break;
-                    case R.id.allelonArabRadioButton:
-                        selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
-                                AvailableStream.ALLELON_ARAB :
-                                AvailableStream.ALLELON_ARAB);
                         break;
                     case R.id.allelonTurkRadioButton:
                         selectStream(android.os.Build.VERSION.SDK_INT >= 19 ? // KitKat, Android 4.4 and up
@@ -177,7 +171,6 @@ public class PlayActivity extends Activity implements EventListener {
 
         allelonRadioButton = (RadioButton) findViewById(R.id.allelonRadioButton);
         allelonRoRadioButton = (RadioButton) findViewById(R.id.allelonRoRadioButton);
-        allelonArabRadioButton = (RadioButton) findViewById(R.id.allelonArabRadioButton);
         allelonTurkRadioButton = (RadioButton) findViewById(R.id.allelonTurkRadioButton);
 
         listenButton = (Button) findViewById(R.id.listenButton);
@@ -247,11 +240,10 @@ public class PlayActivity extends Activity implements EventListener {
     private void updateControlsStatus(MediaPlayerStatusEvent mediaPlayerStatus) {
         if (mediaPlayerStatus.playing) {
             int indexOfPlayingStream = findIndexOfPlayingStream(mediaPlayerStatus.playedStream);
-            switch (indexOfPlayingStream % 4) {
+            switch (indexOfPlayingStream % 3) {
                 case 0: allelonRadioButton.toggle(); break;
                 case 1: allelonRoRadioButton.toggle(); break;
-                case 2: allelonArabRadioButton.toggle(); break;
-                case 3: allelonTurkRadioButton.toggle(); break;
+                case 2: allelonTurkRadioButton.toggle(); break;
             }
         }
 

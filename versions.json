@@ -1,12 +1,12 @@
 {
   "version": {
-    "version": "3.4.1",
+    "version": "3.4.2",
     "files": {
       "Allelon/src/main/AndroidManifest.xml": "android:versionName=\"##VERSION##\" >"
     }
   },
   "versionCode": {
-    "version": "35",
+    "version": "36",
     "files": {
       "Allelon/src/main/AndroidManifest.xml": "android:versionCode=\"##VERSION##\""
     }

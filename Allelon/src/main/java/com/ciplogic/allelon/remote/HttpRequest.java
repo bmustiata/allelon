@@ -29,7 +29,7 @@ public class HttpRequest {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 response.getEntity().writeTo(out);
                 out.close();
-                String responseString = out.toString();
+                String responseString = out.toString("utf-8");
 
                 return responseString;
             } else{
